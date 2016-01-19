@@ -2,7 +2,7 @@
 
 class Item extends CI_Controller
 {
-    public $data = [];
+    public $data = []; //comment
 
     public function __construct()
     {
