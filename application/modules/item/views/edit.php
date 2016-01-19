@@ -1,13 +1,13 @@
 <div class="container">
 
-    <!-- Button vard_dump modal -->
-    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">var_dump</button>
-
     <?= form_open('item/edit/' . $item->item_id); ?>
 
     <?= form_input('item_id', set_value($item->item_id)); ?>
 
     <?= form_submit('editer', 'Editer', ['class' => 'btn btn-primary']); ?>
+
+    <!-- Button vard_dump modal -->
+    <?= form_button('var_dump', 'var_dump', ['class' => 'btn btn-warning', 'data-toggle' => 'modal', 'data-target' => '#myModal']); ?>
 
     <?= form_close(); ?>
 
