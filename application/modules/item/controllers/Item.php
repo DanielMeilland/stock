@@ -53,6 +53,7 @@ class Item extends CI_Controller
     public function edit($item_id = null)
     {
         $this->data['item'] = $this->item->get($item_id);
+        $this->data['suppliers'] = $this->item->suppliers_list();
 
         if ($this->form_validation->run() == false) {
             $this->template

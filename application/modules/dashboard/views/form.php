@@ -130,11 +130,11 @@
                                     <div class="col-md-offset-3 col-md-8">
                                         <div class="input-group">
                                             <input type="text" name="new_group" id="new_group" class="form-control">
-                          <span class="input-group-btn">
-                            <a href="#" class="btn btn-default">
-                                <i class="glyphicon glyphicon-ok"></i>
-                            </a>
-                          </span>
+                                          <span class="input-group-btn">
+                                            <a href="#" class="btn btn-default">
+                                                <i class="glyphicon glyphicon-ok"></i>
+                                            </a>
+                                          </span>
                                         </div>
                                     </div>
                                 </div>

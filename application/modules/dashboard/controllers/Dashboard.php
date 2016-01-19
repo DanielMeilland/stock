@@ -26,4 +26,14 @@ class Dashboard extends CI_Controller
             ->set_layout('dashboard')
             ->build('dashboard');
     }
+
+    public function form()
+    {
+        $this->template
+            ->set_partial('header', 'partials/dashboard_header')
+            ->set_partial('navbar', 'partials/dashboard_navbar')
+            ->set_partial('footer', 'partials/dashboard_footer')
+            ->set_layout('dashboard')
+            ->build('form');
+    }
 }
