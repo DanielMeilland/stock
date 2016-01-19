@@ -6,7 +6,7 @@
  * Date: 08.01.2016
  * Time: 14:00
  */
-class Users extends CI_Controller
+class Users extends MX_Controller
 {
 
     public function __construct()

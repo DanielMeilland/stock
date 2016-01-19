@@ -6,8 +6,17 @@
  * Date: 17.01.16
  * Time: 18:49
  */
-class Dashboard extends MY_Controller
+class Dashboard extends CI_Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->library('session');
+        if (!$this->session->userdata("logged_in")) {
+            redirect('authentification/login');
+        }
+    }
+
     public function index()
     {
         $this->template

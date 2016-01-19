@@ -13,6 +13,8 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li class=""><a href="<?= site_url('home'); ?>">Home</a></li>
+                <li class=""><a href="<?= site_url('dashboard'); ?>">Dashboard</a></li>
+                <li class=""><a href="<?= site_url('item'); ?>">Item</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <?php if ($this->session->userdata("logged_in")): ?>
