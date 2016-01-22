@@ -1,5 +1,7 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+// https://github.com/JeffreyWay/Laravel-4-Generators
+
 class Item extends CI_Controller
 {
     public $data = []; //comment
@@ -8,51 +10,74 @@ class Item extends CI_Controller
     {
         parent::__construct();
         $this->load->model('item_model', 'item');
+        $this->output->enable_profiler(TRUE);
     }
 
+    /**
+     * Display a listing of posts
+     *
+     * @return Response
+     */
     public function index()
     {
         $this->data['items'] = $this->item->get_all();
 
-        $this->template
+        return $this->template
             ->set_partial('header', 'partials/dashboard_header')
             ->set_partial('navbar', 'partials/dashboard_navbar')
             ->set_partial('footer', 'partials/dashboard_footer')
-            ->set_layout('dashboard')
-            ->set($this->data)
-            ->build('list');
+            ->set_layout('dashboard')->set($this->data)->build('index');
     }
 
-    public function add()
+    /**
+     * Show the form for creating a new post
+     *
+     * @return Response
+     */
+    public function create()
     {
         if ($this->form_validation->run() == false) {
-            $this->template
+            return $this->template
                 ->set_partial('header', 'partials/dashboard_header')
                 ->set_partial('navbar', 'partials/dashboard_navbar')
                 ->set_partial('footer', 'partials/dashboard_footer')
-                ->set_layout('dashboard')
-                ->build('add');
+                ->set_layout('dashboard')->build('create');
         } else {
-            $this->item->insert($this->data);
+            return $this->store();
         }
     }
 
-    public function read($item_id = null)
+    /**
+     * Store a newly created post in storage.
+     *
+     * @return Response
+     */
+    public function store()
     {
-        $this->data['item'] = $this->item->get($item_id);
+        $this->item->skip_validation();
+        $this->item->insert($this->data);
+    }
+
+    public function read($id = null)
+    {
+        $this->data['item'] = $this->item->get($id);
 
         $this->template
             ->set_partial('header', 'partials/dashboard_header')
             ->set_partial('navbar', 'partials/dashboard_navbar')
             ->set_partial('footer', 'partials/dashboard_footer')
-            ->set_layout('dashboard')
-            ->set($this->data)
-            ->build('read');
+            ->set_layout('dashboard')->set($this->data)->build('show');
     }
 
-    public function edit($item_id = null)
+    /**
+     * Show the form for editing the specified post.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function edit($id = null)
     {
-        $this->data['item'] = $this->item->get($item_id);
+        $this->data['item'] = $this->item->get($id);
         $this->data['suppliers'] = $this->item->suppliers_list();
 
         if ($this->form_validation->run() == false) {
@@ -60,17 +85,33 @@ class Item extends CI_Controller
                 ->set_partial('header', 'partials/dashboard_header')
                 ->set_partial('navbar', 'partials/dashboard_navbar')
                 ->set_partial('footer', 'partials/dashboard_footer')
-                ->set_layout('dashboard')
-                ->set($this->data)
-                ->build('edit');
+                ->set_layout('dashboard')->set($this->data)->build('edit');
         } else {
-            $this->item->update($this->data);
+            $this->update($this->data);
         }
     }
 
-    public
-    function delete($id)
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function update($id)
+    {
+        $this->item->update($id);
+        redirect('item', 'refresh');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function delete($id)
     {
         $this->item->delete($id);
+        redirect('item', 'refresh');
     }
 }

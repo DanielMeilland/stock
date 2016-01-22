@@ -1,17 +1,5 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-/* ********************************************************************************************
- * Item_model : Model to interact with the stock database
- *
- *
- *
- *********************************************************************************************/
-
-// Deactivate sql error feedback :
-// In application/config/database.php set
-// $db['default']['db_debug'] = FALSE;
-
-
 class Item_model extends MY_Model
 {
     public $_table = 'item';
@@ -34,7 +22,6 @@ class Item_model extends MY_Model
                 $list[] = $row;
             }
         }
-        return $list;
     }
 
 
