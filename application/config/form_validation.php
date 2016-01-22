@@ -18,7 +18,8 @@
 $config = [
 
     'authentification/register' => [
-        array('field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[users.username], array(\'is_unique\' => \'This username already exists. Please choose another one.\')'),
+        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[users.username],
+        [\'is_unique\' => \'This username already exists. Please choose another one.\']'],
         ['field' => 'firstname', 'label' => 'First name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
         ['field' => 'lastname', 'label' => 'Last name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
         ['field' => 'password', 'label' => 'Password', 'rules' => 'trim|required|min_length[8]'],
@@ -55,7 +56,7 @@ $config = [
         ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[groups.name]'],
     ],
 
-    'items/add' => [
+    'item/add' => [
         ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
     ],
 
