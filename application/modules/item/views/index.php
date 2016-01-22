@@ -1,3 +1,15 @@
+<style>
+    .btn-glyphicon {
+        padding: 8px;
+        background: #ffffff;
+        margin-right: 4px;
+    }
+
+    .icon-btn {
+        padding: 1px 15px 3px 2px;
+        border-radius: 50px;
+    }
+</style>
 <div id="main" class="container-fluid" style="margin-top: 50px">
 
     <div id="top" class="row">
@@ -44,9 +56,11 @@
                         <td><?= $item->description; ?></td>
                         <td><?= $item->created_date; ?></td>
                         <td class="actions">
-                            <a class="btn btn-success btn-xs" href="<?= site_url('item/read/' . $item->item_id); ?>">Voir</a>
-                            <a class="btn btn-warning btn-xs" href="<?= site_url('item/edit/' . $item->item_id); ?>">Editer</a>
-                            <a class="btn btn-danger btn-xs" href="#" data-toggle="modal" data-target="#delete-modal">Supprimer</a>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <?= anchor(site_url('item/read/' . $item->item_id), 'Voir', ['class' => 'btn btn-default btn-xs']); ?>
+                                <?= anchor(site_url('item/edit/' . $item->item_id), 'Editer', ['class' => 'btn btn-primary btn-xs']); ?>
+                                <?= anchor(null, 'Supprimer', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'modal', 'data-target' => '#delete-modal']); ?>
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -66,12 +80,12 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span
                         aria-hidden="true">×</span></button>
-                <h4 class="modal-title" id="modalLabel">Supprimer l'item</h4>
+                <h4 class="modal-title" id="modalLabel">Supprimer l'item ?</h4>
             </div>
-            <div class="modal-body">Confirmation...</div>
+            <div class="modal-body"><?php var_dump($item); ?></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary"
-                        onclick="<?= site_url('item/delete/' . $item->item_id); ?>">Oui
+                        onClick="location.href='<?= site_url('item/delete/' . $item->item_id); ?>'">Oui
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
             </div>
