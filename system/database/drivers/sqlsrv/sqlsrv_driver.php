@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 2.0.3
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_sqlsrv_driver extends CI_DB {
 
@@ -141,11 +141,12 @@ class CI_DB_sqlsrv_driver extends CI_DB {
 			unset($connection['UID'], $connection['PWD']);
 		}
 
-		if (FALSE !== ($this->conn_id = sqlsrv_connect($this->hostname, $connection))) {
+		if (FALSE !== ($this->conn_id = sqlsrv_connect($this->hostname, $connection)))
+		{
 			// Determine how identifiers are escaped
 			$query = $this->query('SELECT CASE WHEN (@@OPTIONS | 256) = @@OPTIONS THEN 1 ELSE 0 END AS qi');
 			$query = $query->row_array();
-			$this->_quoted_identifier = empty($query) ? FALSE : (bool)$query['qi'];
+			$this->_quoted_identifier = empty($query) ? FALSE : (bool) $query['qi'];
 			$this->_escape_char = ($this->_quoted_identifier) ? '"' : array('[', ']');
 		}
 
@@ -194,9 +195,45 @@ class CI_DB_sqlsrv_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Begin Transaction
+	 *
+	 * @return	bool
+	 */
+	protected function _trans_begin()
+	{
+		return sqlsrv_begin_transaction($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Commit Transaction
+	 *
+	 * @return	bool
+	 */
+	protected function _trans_commit()
+	{
+		return sqlsrv_commit($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Rollback Transaction
+	 *
+	 * @return	bool
+	 */
+	protected function _trans_rollback()
+	{
+		return sqlsrv_rollback($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Affected Rows
 	 *
-	 * @return    int
+	 * @return	int
 	 */
 	public function affected_rows()
 	{
@@ -210,7 +247,7 @@ class CI_DB_sqlsrv_driver extends CI_DB {
 	 *
 	 * Returns the last id created in the Identity column.
 	 *
-	 * @return    string
+	 * @return	string
 	 */
 	public function insert_id()
 	{
@@ -220,103 +257,23 @@ class CI_DB_sqlsrv_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Returns an object with field data
+	 * Database version number
 	 *
-	 * @param    string $table
-	 * @return    array
+	 * @return	string
 	 */
-	public function field_data($table)
+	public function version()
 	{
-		$sql = 'SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, COLUMN_DEFAULT
-			FROM INFORMATION_SCHEMA.Columns
-			WHERE UPPER(TABLE_NAME) = ' . $this->escape(strtoupper($table));
+		if (isset($this->data_cache['version']))
+		{
+			return $this->data_cache['version'];
+		}
 
-		if (($query = $this->query($sql)) === FALSE)
+		if ( ! $this->conn_id OR ($info = sqlsrv_server_info($this->conn_id)) === FALSE)
 		{
 			return FALSE;
 		}
-		$query = $query->result_object();
 
-		$retval = array();
-		for ($i = 0, $c = count($query); $i < $c; $i++) {
-			$retval[$i] = new stdClass();
-			$retval[$i]->name = $query[$i]->COLUMN_NAME;
-			$retval[$i]->type = $query[$i]->DATA_TYPE;
-			$retval[$i]->max_length = ($query[$i]->CHARACTER_MAXIMUM_LENGTH > 0) ? $query[$i]->CHARACTER_MAXIMUM_LENGTH : $query[$i]->NUMERIC_PRECISION;
-			$retval[$i]->default = $query[$i]->COLUMN_DEFAULT;
-		}
-
-		return $retval;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Error
-	 *
-	 * Returns an array containing code and message of the last
-	 * database error that has occured.
-	 *
-	 * @return    array
-	 */
-	public function error()
-	{
-		$error = array('code' => '00000', 'message' => '');
-		$sqlsrv_errors = sqlsrv_errors(SQLSRV_ERR_ERRORS);
-
-		if (!is_array($sqlsrv_errors))
-		{
-			return $error;
-		}
-
-		$sqlsrv_error = array_shift($sqlsrv_errors);
-		if (isset($sqlsrv_error['SQLSTATE'])) {
-			$error['code'] = isset($sqlsrv_error['code']) ? $sqlsrv_error['SQLSTATE'] . '/' . $sqlsrv_error['code'] : $sqlsrv_error['SQLSTATE'];
-		} elseif (isset($sqlsrv_error['code'])) {
-			$error['code'] = $sqlsrv_error['code'];
-		}
-
-		if (isset($sqlsrv_error['message'])) {
-			$error['message'] = $sqlsrv_error['message'];
-		}
-
-		return $error;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Begin Transaction
-	 *
-	 * @return    bool
-	 */
-	protected function _trans_begin()
-	{
-		return sqlsrv_begin_transaction($this->conn_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Commit Transaction
-	 *
-	 * @return    bool
-	 */
-	protected function _trans_commit()
-	{
-		return sqlsrv_commit($this->conn_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Rollback Transaction
-	 *
-	 * @return    bool
-	 */
-	protected function _trans_rollback()
-	{
-		return sqlsrv_rollback($this->conn_id);
+		return $this->data_cache['version'] = $info['SQLServerVersion'];
 	}
 
 	// --------------------------------------------------------------------
@@ -359,6 +316,77 @@ class CI_DB_sqlsrv_driver extends CI_DB {
 		return 'SELECT COLUMN_NAME
 			FROM INFORMATION_SCHEMA.Columns
 			WHERE UPPER(TABLE_NAME) = '.$this->escape(strtoupper($table));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns an object with field data
+	 *
+	 * @param	string	$table
+	 * @return	array
+	 */
+	public function field_data($table)
+	{
+		$sql = 'SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, COLUMN_DEFAULT
+			FROM INFORMATION_SCHEMA.Columns
+			WHERE UPPER(TABLE_NAME) = '.$this->escape(strtoupper($table));
+
+		if (($query = $this->query($sql)) === FALSE)
+		{
+			return FALSE;
+		}
+		$query = $query->result_object();
+
+		$retval = array();
+		for ($i = 0, $c = count($query); $i < $c; $i++)
+		{
+			$retval[$i]			= new stdClass();
+			$retval[$i]->name		= $query[$i]->COLUMN_NAME;
+			$retval[$i]->type		= $query[$i]->DATA_TYPE;
+			$retval[$i]->max_length		= ($query[$i]->CHARACTER_MAXIMUM_LENGTH > 0) ? $query[$i]->CHARACTER_MAXIMUM_LENGTH : $query[$i]->NUMERIC_PRECISION;
+			$retval[$i]->default		= $query[$i]->COLUMN_DEFAULT;
+		}
+
+		return $retval;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Error
+	 *
+	 * Returns an array containing code and message of the last
+	 * database error that has occured.
+	 *
+	 * @return	array
+	 */
+	public function error()
+	{
+		$error = array('code' => '00000', 'message' => '');
+		$sqlsrv_errors = sqlsrv_errors(SQLSRV_ERR_ERRORS);
+
+		if ( ! is_array($sqlsrv_errors))
+		{
+			return $error;
+		}
+
+		$sqlsrv_error = array_shift($sqlsrv_errors);
+		if (isset($sqlsrv_error['SQLSTATE']))
+		{
+			$error['code'] = isset($sqlsrv_error['code']) ? $sqlsrv_error['SQLSTATE'].'/'.$sqlsrv_error['code'] : $sqlsrv_error['SQLSTATE'];
+		}
+		elseif (isset($sqlsrv_error['code']))
+		{
+			$error['code'] = $sqlsrv_error['code'];
+		}
+
+		if (isset($sqlsrv_error['message']))
+		{
+			$error['message'] = $sqlsrv_error['message'];
+		}
+
+		return $error;
 	}
 
 	// --------------------------------------------------------------------
@@ -474,26 +502,6 @@ class CI_DB_sqlsrv_driver extends CI_DB {
 		}
 
 		return preg_replace('/(^\SELECT (DISTINCT)?)/i','\\1 TOP '.$limit.' ', $sql);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Database version number
-	 *
-	 * @return    string
-	 */
-	public function version()
-	{
-		if (isset($this->data_cache['version'])) {
-			return $this->data_cache['version'];
-		}
-
-		if (!$this->conn_id OR ($info = sqlsrv_server_info($this->conn_id)) === FALSE) {
-			return FALSE;
-		}
-
-		return $this->data_cache['version'] = $info['SQLServerVersion'];
 	}
 
 	// --------------------------------------------------------------------

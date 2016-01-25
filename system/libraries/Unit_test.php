@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.3.1
  * @filesource
  */
@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	UnitTesting
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/unit_testing.html
+ * @link		https://codeigniter.com/user_guide/libraries/unit_testing.html
  */
 class CI_Unit_test {
 
@@ -167,36 +167,18 @@ class CI_Unit_test {
 		$back = $this->_backtrace();
 
 		$report = array (
-			'test_name' => $test_name,
+			'test_name'     => $test_name,
 			'test_datatype' => gettype($test),
-			'res_datatype' => $extype,
-			'result' => ($result === TRUE) ? 'passed' : 'failed',
-			'file' => $back['file'],
-			'line' => $back['line'],
-			'notes' => $notes
+			'res_datatype'  => $extype,
+			'result'        => ($result === TRUE) ? 'passed' : 'failed',
+			'file'          => $back['file'],
+			'line'          => $back['line'],
+			'notes'         => $notes
 		);
 
 		$this->results[] = $report;
 
 		return $this->report($this->result(array($report)));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Generate a backtrace
-	 *
-	 * This lets us show file names and line numbers
-	 *
-	 * @return    array
-	 */
-	protected function _backtrace()
-	{
-		$back = debug_backtrace();
-		return array(
-			'file' => (isset($back[1]['file']) ? $back[1]['file'] : ''),
-			'line' => (isset($back[1]['line']) ? $back[1]['line'] : '')
-		);
 	}
 
 	// --------------------------------------------------------------------
@@ -252,6 +234,36 @@ class CI_Unit_test {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Use strict comparison
+	 *
+	 * Causes the evaluation to use === rather than ==
+	 *
+	 * @param	bool	$state
+	 * @return	void
+	 */
+	public function use_strict($state = TRUE)
+	{
+		$this->strict = (bool) $state;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Make Unit testing active
+	 *
+	 * Enables/disables unit testing
+	 *
+	 * @param	bool
+	 * @return	void
+	 */
+	public function active($state = TRUE)
+	{
+		$this->active = (bool) $state;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Result Array
 	 *
 	 * Returns the raw result data
@@ -278,9 +290,11 @@ class CI_Unit_test {
 				if ( ! in_array($key, $this->_test_items_visible))
 				{
 					continue;
-				} elseif (in_array($key, array('test_name', 'test_datatype', 'test_res_datatype', 'result'), TRUE))
+				}
+				elseif (in_array($key, array('test_name', 'test_datatype', 'test_res_datatype', 'result'), TRUE))
 				{
-					if (FALSE !== ($line = $CI->lang->line(strtolower('ut_' . $val), FALSE))) {
+					if (FALSE !== ($line = $CI->lang->line(strtolower('ut_'.$val), FALSE)))
+					{
 						$val = $line;
 					}
 				}
@@ -297,25 +311,34 @@ class CI_Unit_test {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Parse Template
+	 * Set the template
 	 *
-	 * Harvests the data within the template {pseudo-variables}
+	 * This lets us set the template to be used to display results
 	 *
+	 * @param	string
 	 * @return	void
 	 */
-	protected function _parse_template()
+	public function set_template($template)
 	{
-		if ($this->_template_rows !== NULL) {
-			return;
-		}
+		$this->_template = $template;
+	}
 
-		if ($this->_template === NULL OR !preg_match('/\{rows\}(.*?)\{\/rows\}/si', $this->_template, $match)) {
-			$this->_default_template();
-			return;
-		}
+	// --------------------------------------------------------------------
 
-		$this->_template_rows = $match[1];
-		$this->_template = str_replace($match[0], '{rows}', $this->_template);
+	/**
+	 * Generate a backtrace
+	 *
+	 * This lets us show file names and line numbers
+	 *
+	 * @return	array
+	 */
+	protected function _backtrace()
+	{
+		$back = debug_backtrace();
+		return array(
+			'file' => (isset($back[1]['file']) ? $back[1]['file'] : ''),
+			'line' => (isset($back[1]['line']) ? $back[1]['line'] : '')
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -336,46 +359,27 @@ class CI_Unit_test {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Use strict comparison
+	 * Parse Template
 	 *
-	 * Causes the evaluation to use === rather than ==
+	 * Harvests the data within the template {pseudo-variables}
 	 *
-	 * @param    bool $state
 	 * @return	void
 	 */
-	public function use_strict($state = TRUE)
+	protected function _parse_template()
 	{
-		$this->strict = (bool)$state;
-	}
+		if ($this->_template_rows !== NULL)
+		{
+			return;
+		}
 
-	// --------------------------------------------------------------------
+		if ($this->_template === NULL OR ! preg_match('/\{rows\}(.*?)\{\/rows\}/si', $this->_template, $match))
+		{
+			$this->_default_template();
+			return;
+		}
 
-	/**
-	 * Make Unit testing active
-	 *
-	 * Enables/disables unit testing
-	 *
-	 * @param    bool
-	 * @return    void
-	 */
-	public function active($state = TRUE)
-	{
-		$this->active = (bool)$state;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set the template
-	 *
-	 * This lets us set the template to be used to display results
-	 *
-	 * @param    string
-	 * @return    void
-	 */
-	public function set_template($template)
-	{
-		$this->_template = $template;
+		$this->_template_rows = $match[1];
+		$this->_template = str_replace($match[0], '{rows}', $this->_template);
 	}
 
 }

@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 3.0.0
  * @filesource
  */
@@ -86,8 +86,8 @@ class CI_Cache_redis extends CI_Driver
 	 * Loads Redis config file if present. Will halt execution
 	 * if a Redis connection can't be established.
 	 *
-	 * @return    void
-	 * @see        Redis::connect()
+	 * @return	void
+	 * @see		Redis::connect()
 	 */
 	public function __construct()
 	{
@@ -102,28 +102,55 @@ class CI_Cache_redis extends CI_Driver
 		$config = array_merge(self::$_default_config, $config);
 		$this->_redis = new Redis();
 
-		try {
-			if ($config['socket_type'] === 'unix') {
+		try
+		{
+			if ($config['socket_type'] === 'unix')
+			{
 				$success = $this->_redis->connect($config['socket']);
-			} else // tcp socket
+			}
+			else // tcp socket
 			{
 				$success = $this->_redis->connect($config['host'], $config['port'], $config['timeout']);
 			}
 
-			if (!$success) {
+			if ( ! $success)
+			{
 				log_message('error', 'Cache: Redis connection failed. Check your configuration.');
 			}
 
-			if (isset($config['password']) && !$this->_redis->auth($config['password'])) {
+			if (isset($config['password']) && ! $this->_redis->auth($config['password']))
+			{
 				log_message('error', 'Cache: Redis authentication failed.');
 			}
-		} catch (RedisException $e) {
-			log_message('error', 'Cache: Redis connection refused (' . $e->getMessage() . ')');
+		}
+		catch (RedisException $e)
+		{
+			log_message('error', 'Cache: Redis connection refused ('.$e->getMessage().')');
 		}
 
 		// Initialize the index of serialized values.
 		$serialized = $this->_redis->sMembers('_ci_redis_serialized');
 		empty($serialized) OR $this->_serialized = array_flip($serialized);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Get cache
+	 *
+	 * @param	string	Cache ID
+	 * @return	mixed
+	 */
+	public function get($key)
+	{
+		$value = $this->_redis->get($key);
+
+		if ($value !== FALSE && isset($this->_serialized[$key]))
+		{
+			return unserialize($value);
+		}
+
+		return $value;
 	}
 
 	// ------------------------------------------------------------------------
@@ -260,26 +287,6 @@ class CI_Cache_redis extends CI_Driver
 		}
 
 		return FALSE;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Get cache
-	 *
-	 * @param    string    Cache ID
-	 * @return    mixed
-	 */
-	public function get($key)
-	{
-		$value = $this->_redis->get($key);
-
-		if ($value !== FALSE && isset($this->_serialized[$key]))
-		{
-			return unserialize($value);
-		}
-
-		return $value;
 	}
 
 	// ------------------------------------------------------------------------

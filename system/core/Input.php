@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Input
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/input.html
+ * @link		https://codeigniter.com/user_guide/libraries/input.html
  */
 class CI_Input {
 
@@ -154,181 +154,12 @@ class CI_Input {
 		$this->_sanitize_globals();
 
 		// CSRF Protection check
-		if ($this->_enable_csrf === TRUE && !is_cli()) {
+		if ($this->_enable_csrf === TRUE && ! is_cli())
+		{
 			$this->security->csrf_verify();
 		}
 
 		log_message('info', 'Input Class Initialized');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Sanitize Globals
-	 *
-	 * Internal method serving for the following purposes:
-	 *
-	 *    - Unsets $_GET data, if query strings are not enabled
-	 *    - Cleans POST, COOKIE and SERVER data
-	 *    - Standardizes newline characters to PHP_EOL
-	 *
-	 * @return    void
-	 */
-	protected function _sanitize_globals()
-	{
-		// Is $_GET data allowed? If not we'll set the $_GET to an empty array
-		if ($this->_allow_get_array === FALSE) {
-			$_GET = array();
-		} elseif (is_array($_GET)) {
-			foreach ($_GET as $key => $val) {
-				$_GET[$this->_clean_input_keys($key)] = $this->_clean_input_data($val);
-			}
-		}
-
-		// Clean $_POST Data
-		if (is_array($_POST)) {
-			foreach ($_POST as $key => $val) {
-				$_POST[$this->_clean_input_keys($key)] = $this->_clean_input_data($val);
-			}
-		}
-
-		// Clean $_COOKIE Data
-		if (is_array($_COOKIE)) {
-			// Also get rid of specially treated cookies that might be set by a server
-			// or silly application, that are of no use to a CI application anyway
-			// but that when present will trip our 'Disallowed Key Characters' alarm
-			// http://www.ietf.org/rfc/rfc2109.txt
-			// note that the key names below are single quoted strings, and are not PHP variables
-			unset(
-				$_COOKIE['$Version'],
-				$_COOKIE['$Path'],
-				$_COOKIE['$Domain']
-			);
-
-			foreach ($_COOKIE as $key => $val) {
-				if (($cookie_key = $this->_clean_input_keys($key)) !== FALSE) {
-					$_COOKIE[$cookie_key] = $this->_clean_input_data($val);
-				} else {
-					unset($_COOKIE[$key]);
-				}
-			}
-		}
-
-		// Sanitize PHP_SELF
-		$_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']);
-
-		log_message('debug', 'Global POST, GET and COOKIE data sanitized');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Clean Keys
-	 *
-	 * Internal method that helps to prevent malicious users
-	 * from trying to exploit keys we make sure that keys are
-	 * only named with alpha-numeric text and a few other items.
-	 *
-	 * @param    string $str Input string
-	 * @param    bool $fatal Whether to terminate script exection
-	 *                or to return FALSE if an invalid
-	 *                key is encountered
-	 * @return    string|bool
-	 */
-	protected function _clean_input_keys($str, $fatal = TRUE)
-	{
-		if (!preg_match('/^[a-z0-9:_\/|-]+$/i', $str)) {
-			if ($fatal === TRUE) {
-				return FALSE;
-			} else {
-				set_status_header(503);
-				echo 'Disallowed Key Characters.';
-				exit(7); // EXIT_USER_INPUT
-			}
-		}
-
-		// Clean UTF-8 if supported
-		if (UTF8_ENABLED === TRUE) {
-			return $this->uni->clean_string($str);
-		}
-
-		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Clean Input Data
-	 *
-	 * Internal method that aids in escaping data and
-	 * standardizing newline characters to PHP_EOL.
-	 *
-	 * @param    string|string[] $str Input string(s)
-	 * @return    string
-	 */
-	protected function _clean_input_data($str)
-	{
-		if (is_array($str)) {
-			$new_array = array();
-			foreach (array_keys($str) as $key) {
-				$new_array[$this->_clean_input_keys($key)] = $this->_clean_input_data($str[$key]);
-			}
-			return $new_array;
-		}
-
-		/* We strip slashes if magic quotes is on to keep things consistent
-
-		   NOTE: In PHP 5.4 get_magic_quotes_gpc() will always return 0 and
-		         it will probably not exist in future versions at all.
-		*/
-		if (!is_php('5.4') && get_magic_quotes_gpc()) {
-			$str = stripslashes($str);
-		}
-
-		// Clean UTF-8 if supported
-		if (UTF8_ENABLED === TRUE) {
-			$str = $this->uni->clean_string($str);
-		}
-
-		// Remove control characters
-		$str = remove_invisible_characters($str, FALSE);
-
-		// Standardize newlines if needed
-		if ($this->_standardize_newlines === TRUE) {
-			return preg_replace('/(?:\r\n|[\r\n])/', PHP_EOL, $str);
-		}
-
-		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch an item from POST data with fallback to GET
-	 *
-	 * @param    string $index Index for item to be fetched from $_POST or $_GET
-	 * @param    bool $xss_clean Whether to apply XSS filtering
-	 * @return    mixed
-	 */
-	public function post_get($index, $xss_clean = NULL)
-	{
-		return isset($_POST[$index])
-			? $this->post($index, $xss_clean)
-			: $this->get($index, $xss_clean);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch an item from the POST array
-	 *
-	 * @param    mixed $index Index for item to be fetched from $_POST
-	 * @param    bool $xss_clean Whether to apply XSS filtering
-	 * @return    mixed
-	 */
-	public function post($index = NULL, $xss_clean = NULL)
-	{
-		return $this->_fetch_from_array($_POST, $index, $xss_clean);
 	}
 
 	// --------------------------------------------------------------------
@@ -411,7 +242,37 @@ class CI_Input {
 		return $this->_fetch_from_array($_GET, $index, $xss_clean);
 	}
 
-	// ------------------------------------------------------------------------
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch an item from the POST array
+	 *
+	 * @param	mixed	$index		Index for item to be fetched from $_POST
+	 * @param	bool	$xss_clean	Whether to apply XSS filtering
+	 * @return	mixed
+	 */
+	public function post($index = NULL, $xss_clean = NULL)
+	{
+		return $this->_fetch_from_array($_POST, $index, $xss_clean);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch an item from POST data with fallback to GET
+	 *
+	 * @param	string	$index		Index for item to be fetched from $_POST or $_GET
+	 * @param	bool	$xss_clean	Whether to apply XSS filtering
+	 * @return	mixed
+	 */
+	public function post_get($index, $xss_clean = NULL)
+	{
+		return isset($_POST[$index])
+			? $this->post($index, $xss_clean)
+			: $this->get($index, $xss_clean);
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch an item from GET data with fallback to POST
@@ -427,7 +288,7 @@ class CI_Input {
 			: $this->post($index, $xss_clean);
 	}
 
-	// ------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch an item from the COOKIE array
@@ -442,6 +303,20 @@ class CI_Input {
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch an item from the SERVER array
+	 *
+	 * @param	mixed	$index		Index for item to be fetched from $_SERVER
+	 * @param	bool	$xss_clean	Whether to apply XSS filtering
+	 * @return	mixed
+	 */
+	public function server($index, $xss_clean = NULL)
+	{
+		return $this->_fetch_from_array($_SERVER, $index, $xss_clean);
+	}
+
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Fetch an item from the php://input stream
@@ -466,7 +341,7 @@ class CI_Input {
 		return $this->_fetch_from_array($this->_input_stream, $index, $xss_clean);
 	}
 
-	// --------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Set cookie
@@ -675,20 +550,6 @@ class CI_Input {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Fetch an item from the SERVER array
-	 *
-	 * @param    mixed $index Index for item to be fetched from $_SERVER
-	 * @param    bool $xss_clean Whether to apply XSS filtering
-	 * @return    mixed
-	 */
-	public function server($index, $xss_clean = NULL)
-	{
-		return $this->_fetch_from_array($_SERVER, $index, $xss_clean);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Validate IP Address
 	 *
 	 * @param	string	$ip	IP address
@@ -728,37 +589,162 @@ class CI_Input {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Request Header
+	 * Sanitize Globals
 	 *
-	 * Returns the value of a single member of the headers class member
+	 * Internal method serving for the following purposes:
 	 *
-	 * @param    string $index Header name
-	 * @param    bool $xss_clean Whether to apply XSS filtering
-	 * @return    string|null    The requested header on success or NULL on failure
+	 *	- Unsets $_GET data, if query strings are not enabled
+	 *	- Cleans POST, COOKIE and SERVER data
+	 * 	- Standardizes newline characters to PHP_EOL
+	 *
+	 * @return	void
 	 */
-	public function get_request_header($index, $xss_clean = FALSE)
+	protected function _sanitize_globals()
 	{
-		static $headers;
-
-		if (!isset($headers))
+		// Is $_GET data allowed? If not we'll set the $_GET to an empty array
+		if ($this->_allow_get_array === FALSE)
 		{
-			empty($this->headers) && $this->request_headers();
-			foreach ($this->headers as $key => $value)
+			$_GET = array();
+		}
+		elseif (is_array($_GET))
+		{
+			foreach ($_GET as $key => $val)
 			{
-				$headers[strtolower($key)] = $value;
+				$_GET[$this->_clean_input_keys($key)] = $this->_clean_input_data($val);
 			}
 		}
 
-		$index = strtolower($index);
-
-		if (!isset($headers[$index]))
+		// Clean $_POST Data
+		if (is_array($_POST))
 		{
-			return NULL;
+			foreach ($_POST as $key => $val)
+			{
+				$_POST[$this->_clean_input_keys($key)] = $this->_clean_input_data($val);
+			}
 		}
 
-		return ($xss_clean === TRUE)
-			? $this->security->xss_clean($headers[$index])
-			: $headers[$index];
+		// Clean $_COOKIE Data
+		if (is_array($_COOKIE))
+		{
+			// Also get rid of specially treated cookies that might be set by a server
+			// or silly application, that are of no use to a CI application anyway
+			// but that when present will trip our 'Disallowed Key Characters' alarm
+			// http://www.ietf.org/rfc/rfc2109.txt
+			// note that the key names below are single quoted strings, and are not PHP variables
+			unset(
+				$_COOKIE['$Version'],
+				$_COOKIE['$Path'],
+				$_COOKIE['$Domain']
+			);
+
+			foreach ($_COOKIE as $key => $val)
+			{
+				if (($cookie_key = $this->_clean_input_keys($key)) !== FALSE)
+				{
+					$_COOKIE[$cookie_key] = $this->_clean_input_data($val);
+				}
+				else
+				{
+					unset($_COOKIE[$key]);
+				}
+			}
+		}
+
+		// Sanitize PHP_SELF
+		$_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']);
+
+		log_message('debug', 'Global POST, GET and COOKIE data sanitized');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean Input Data
+	 *
+	 * Internal method that aids in escaping data and
+	 * standardizing newline characters to PHP_EOL.
+	 *
+	 * @param	string|string[]	$str	Input string(s)
+	 * @return	string
+	 */
+	protected function _clean_input_data($str)
+	{
+		if (is_array($str))
+		{
+			$new_array = array();
+			foreach (array_keys($str) as $key)
+			{
+				$new_array[$this->_clean_input_keys($key)] = $this->_clean_input_data($str[$key]);
+			}
+			return $new_array;
+		}
+
+		/* We strip slashes if magic quotes is on to keep things consistent
+
+		   NOTE: In PHP 5.4 get_magic_quotes_gpc() will always return 0 and
+		         it will probably not exist in future versions at all.
+		*/
+		if ( ! is_php('5.4') && get_magic_quotes_gpc())
+		{
+			$str = stripslashes($str);
+		}
+
+		// Clean UTF-8 if supported
+		if (UTF8_ENABLED === TRUE)
+		{
+			$str = $this->uni->clean_string($str);
+		}
+
+		// Remove control characters
+		$str = remove_invisible_characters($str, FALSE);
+
+		// Standardize newlines if needed
+		if ($this->_standardize_newlines === TRUE)
+		{
+			return preg_replace('/(?:\r\n|[\r\n])/', PHP_EOL, $str);
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clean Keys
+	 *
+	 * Internal method that helps to prevent malicious users
+	 * from trying to exploit keys we make sure that keys are
+	 * only named with alpha-numeric text and a few other items.
+	 *
+	 * @param	string	$str	Input string
+	 * @param	bool	$fatal	Whether to terminate script exection
+	 *				or to return FALSE if an invalid
+	 *				key is encountered
+	 * @return	string|bool
+	 */
+	protected function _clean_input_keys($str, $fatal = TRUE)
+	{
+		if ( ! preg_match('/^[a-z0-9:_\/|-]+$/i', $str))
+		{
+			if ($fatal === TRUE)
+			{
+				return FALSE;
+			}
+			else
+			{
+				set_status_header(503);
+				echo 'Disallowed Key Characters.';
+				exit(7); // EXIT_USER_INPUT
+			}
+		}
+
+		// Clean UTF-8 if supported
+		if (UTF8_ENABLED === TRUE)
+		{
+			return $this->uni->clean_string($str);
+		}
+
+		return $str;
 	}
 
 	// --------------------------------------------------------------------
@@ -803,6 +789,42 @@ class CI_Input {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get Request Header
+	 *
+	 * Returns the value of a single member of the headers class member
+	 *
+	 * @param	string		$index		Header name
+	 * @param	bool		$xss_clean	Whether to apply XSS filtering
+	 * @return	string|null	The requested header on success or NULL on failure
+	 */
+	public function get_request_header($index, $xss_clean = FALSE)
+	{
+		static $headers;
+
+		if ( ! isset($headers))
+		{
+			empty($this->headers) && $this->request_headers();
+			foreach ($this->headers as $key => $value)
+			{
+				$headers[strtolower($key)] = $value;
+			}
+		}
+
+		$index = strtolower($index);
+
+		if ( ! isset($headers[$index]))
+		{
+			return NULL;
+		}
+
+		return ($xss_clean === TRUE)
+			? $this->security->xss_clean($headers[$index])
+			: $headers[$index];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Is AJAX request?
 	 *
 	 * Test to see if a request contains the HTTP_X_REQUESTED_WITH header.
@@ -822,7 +844,7 @@ class CI_Input {
 	 * Test to see if a request was made from the command line.
 	 *
 	 * @deprecated	3.0.0	Use is_cli() instead
-	 * @return    bool
+	 * @return	bool
 	 */
 	public function is_cli_request()
 	{

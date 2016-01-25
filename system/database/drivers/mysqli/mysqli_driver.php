@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.3.0
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_mysqli_driver extends CI_DB {
 
@@ -84,7 +84,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 *
 	 * @var	bool
 	 */
-	public $stricton = FALSE;
+	public $stricton;
 
 	// --------------------------------------------------------------------
 
@@ -94,6 +94,17 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 * @var	string
 	 */
 	protected $_escape_char = '`';
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * MySQLi object
+	 *
+	 * Has to be preserved without being assigned to $conn_id.
+	 *
+	 * @var	MySQLi
+	 */
+	protected $_mysqli;
 
 	// --------------------------------------------------------------------
 
@@ -122,53 +133,88 @@ class CI_DB_mysqli_driver extends CI_DB {
 		}
 
 		$client_flags = ($this->compress === TRUE) ? MYSQLI_CLIENT_COMPRESS : 0;
-		$mysqli = mysqli_init();
+		$this->_mysqli = mysqli_init();
 
-		$mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+		$this->_mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
 
-		if ($this->stricton)
+		if (isset($this->stricton))
 		{
-			$mysqli->options(MYSQLI_INIT_COMMAND, 'SET SESSION sql_mode="STRICT_ALL_TABLES"');
+			if ($this->stricton)
+			{
+				$this->_mysqli->options(MYSQLI_INIT_COMMAND, 'SET SESSION sql_mode = CONCAT(@@sql_mode, ",", "STRICT_ALL_TABLES")');
+			}
+			else
+			{
+				$this->_mysqli->options(MYSQLI_INIT_COMMAND,
+					'SET SESSION sql_mode =
+					REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+					@@sql_mode,
+					"STRICT_ALL_TABLES,", ""),
+					",STRICT_ALL_TABLES", ""),
+					"STRICT_ALL_TABLES", ""),
+					"STRICT_TRANS_TABLES,", ""),
+					",STRICT_TRANS_TABLES", ""),
+					"STRICT_TRANS_TABLES", "")'
+				);
+			}
 		}
 
-		if (is_array($this->encrypt)) {
+		if (is_array($this->encrypt))
+		{
 			$ssl = array();
-			empty($this->encrypt['ssl_key']) OR $ssl['key'] = $this->encrypt['ssl_key'];
-			empty($this->encrypt['ssl_cert']) OR $ssl['cert'] = $this->encrypt['ssl_cert'];
-			empty($this->encrypt['ssl_ca']) OR $ssl['ca'] = $this->encrypt['ssl_ca'];
+			empty($this->encrypt['ssl_key'])    OR $ssl['key']    = $this->encrypt['ssl_key'];
+			empty($this->encrypt['ssl_cert'])   OR $ssl['cert']   = $this->encrypt['ssl_cert'];
+			empty($this->encrypt['ssl_ca'])     OR $ssl['ca']     = $this->encrypt['ssl_ca'];
 			empty($this->encrypt['ssl_capath']) OR $ssl['capath'] = $this->encrypt['ssl_capath'];
 			empty($this->encrypt['ssl_cipher']) OR $ssl['cipher'] = $this->encrypt['ssl_cipher'];
 
-			if (!empty($ssl)) {
-				if (!empty($this->encrypt['ssl_verify']) && defined('MYSQLI_OPT_SSL_VERIFY_SERVER_CERT')) {
-					$mysqli->options(MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, TRUE);
+			if ( ! empty($ssl))
+			{
+				if (isset($this->encrypt['ssl_verify']))
+				{
+					if ($this->encrypt['ssl_verify'])
+					{
+						defined('MYSQLI_OPT_SSL_VERIFY_SERVER_CERT') && $this->_mysqli->options(MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, TRUE);
+					}
+					// Apparently (when it exists), setting MYSQLI_OPT_SSL_VERIFY_SERVER_CERT
+					// to FALSE didn't do anything, so PHP 5.6.16 introduced yet another
+					// constant ...
+					//
+					// https://secure.php.net/ChangeLog-5.php#5.6.16
+					// https://bugs.php.net/bug.php?id=68344
+					elseif (defined('MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT'))
+					{
+						$this->_mysqli->options(MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT, TRUE);
+					}
 				}
 
 				$client_flags |= MYSQLI_CLIENT_SSL;
-				$mysqli->ssl_set(
-					isset($ssl['key']) ? $ssl['key'] : NULL,
-					isset($ssl['cert']) ? $ssl['cert'] : NULL,
-					isset($ssl['ca']) ? $ssl['ca'] : NULL,
+				$this->_mysqli->ssl_set(
+					isset($ssl['key'])    ? $ssl['key']    : NULL,
+					isset($ssl['cert'])   ? $ssl['cert']   : NULL,
+					isset($ssl['ca'])     ? $ssl['ca']     : NULL,
 					isset($ssl['capath']) ? $ssl['capath'] : NULL,
 					isset($ssl['cipher']) ? $ssl['cipher'] : NULL
 				);
 			}
 		}
 
-		if ($mysqli->real_connect($hostname, $this->username, $this->password, $this->database, $port, $socket, $client_flags)) {
+		if ($this->_mysqli->real_connect($hostname, $this->username, $this->password, $this->database, $port, $socket, $client_flags))
+		{
 			// Prior to version 5.7.3, MySQL silently downgrades to an unencrypted connection if SSL setup fails
 			if (
 				($client_flags & MYSQLI_CLIENT_SSL)
-				&& version_compare($mysqli->client_info, '5.7.3', '<=')
-				&& empty($mysqli->query("SHOW STATUS LIKE 'ssl_cipher'")->fetch_object()->Value)
-			) {
-				$mysqli->close();
+				&& version_compare($this->_mysqli->client_info, '5.7.3', '<=')
+				&& empty($this->_mysqli->query("SHOW STATUS LIKE 'ssl_cipher'")->fetch_object()->Value)
+			)
+			{
+				$this->_mysqli->close();
 				$message = 'MySQLi was configured for an SSL connection, but got an unencrypted connection instead!';
 				log_message('error', $message);
 				return ($this->db->db_debug) ? $this->db->display_error($message, '', TRUE) : FALSE;
 			}
 
-			return $mysqli;
+			return $this->_mysqli;
 		}
 
 		return FALSE;
@@ -219,109 +265,31 @@ class CI_DB_mysqli_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Database version number
-	 *
-	 * @return    string
-	 */
-	public function version()
-	{
-		if (isset($this->data_cache['version'])) {
-			return $this->data_cache['version'];
-		}
-
-		return $this->data_cache['version'] = $this->conn_id->server_info;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Affected Rows
-	 *
-	 * @return    int
-	 */
-	public function affected_rows()
-	{
-		return $this->conn_id->affected_rows;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert ID
-	 *
-	 * @return    int
-	 */
-	public function insert_id()
-	{
-		return $this->conn_id->insert_id;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns an object with field data
-	 *
-	 * @param    string $table
-	 * @return    array
-	 */
-	public function field_data($table)
-	{
-		if (($query = $this->query('SHOW COLUMNS FROM ' . $this->protect_identifiers($table, TRUE, NULL, FALSE))) === FALSE)
-		{
-			return FALSE;
-		}
-		$query = $query->result_object();
-
-		$retval = array();
-		for ($i = 0, $c = count($query); $i < $c; $i++) {
-			$retval[$i] = new stdClass();
-			$retval[$i]->name = $query[$i]->Field;
-
-			sscanf($query[$i]->Type, '%[a-z](%d)',
-				$retval[$i]->type,
-				$retval[$i]->max_length
-			);
-
-			$retval[$i]->default = $query[$i]->Default;
-			$retval[$i]->primary_key = (int)($query[$i]->Key === 'PRI');
-		}
-
-		return $retval;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Error
-	 *
-	 * Returns an array containing code and message of the last
-	 * database error that has occurred.
-	 *
-	 * @return    array
-	 */
-	public function error()
-	{
-		if (!empty($this->conn_id->connect_errno)) {
-			return array(
-				'code' => $this->conn_id->connect_errno,
-				'message' => is_php('5.2.9') ? $this->conn_id->connect_error : mysqli_connect_error()
-			);
-		}
-
-		return array('code' => $this->conn_id->errno, 'message' => $this->conn_id->error);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Set client character set
 	 *
-	 * @param    string $charset
-	 * @return    bool
+	 * @param	string	$charset
+	 * @return	bool
 	 */
 	protected function _db_set_charset($charset)
 	{
 		return $this->conn_id->set_charset($charset);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Database version number
+	 *
+	 * @return	string
+	 */
+	public function version()
+	{
+		if (isset($this->data_cache['version']))
+		{
+			return $this->data_cache['version'];
+		}
+
+		return $this->data_cache['version'] = $this->conn_id->server_info;
 	}
 
 	// --------------------------------------------------------------------
@@ -426,6 +394,30 @@ class CI_DB_mysqli_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Affected Rows
+	 *
+	 * @return	int
+	 */
+	public function affected_rows()
+	{
+		return $this->conn_id->affected_rows;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert ID
+	 *
+	 * @return	int
+	 */
+	public function insert_id()
+	{
+		return $this->conn_id->insert_id;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * List table query
 	 *
 	 * Generates a platform-specific query string so that the table names can be fetched
@@ -458,6 +450,63 @@ class CI_DB_mysqli_driver extends CI_DB {
 	protected function _list_columns($table = '')
 	{
 		return 'SHOW COLUMNS FROM '.$this->protect_identifiers($table, TRUE, NULL, FALSE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns an object with field data
+	 *
+	 * @param	string	$table
+	 * @return	array
+	 */
+	public function field_data($table)
+	{
+		if (($query = $this->query('SHOW COLUMNS FROM '.$this->protect_identifiers($table, TRUE, NULL, FALSE))) === FALSE)
+		{
+			return FALSE;
+		}
+		$query = $query->result_object();
+
+		$retval = array();
+		for ($i = 0, $c = count($query); $i < $c; $i++)
+		{
+			$retval[$i]			= new stdClass();
+			$retval[$i]->name		= $query[$i]->Field;
+
+			sscanf($query[$i]->Type, '%[a-z](%d)',
+				$retval[$i]->type,
+				$retval[$i]->max_length
+			);
+
+			$retval[$i]->default		= $query[$i]->Default;
+			$retval[$i]->primary_key	= (int) ($query[$i]->Key === 'PRI');
+		}
+
+		return $retval;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Error
+	 *
+	 * Returns an array containing code and message of the last
+	 * database error that has occurred.
+	 *
+	 * @return	array
+	 */
+	public function error()
+	{
+		if ( ! empty($this->_mysqli->connect_errno))
+		{
+			return array(
+				'code' => $this->_mysqli->connect_errno,
+				'message' => is_php('5.2.9') ? $this->_mysqli->connect_error : mysqli_connect_error()
+			);
+		}
+
+		return array('code' => $this->conn_id->errno, 'message' => $this->conn_id->error);
 	}
 
 	// --------------------------------------------------------------------

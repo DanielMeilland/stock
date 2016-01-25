@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 3.0.0
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_ibase_driver extends CI_DB {
 
@@ -93,83 +93,27 @@ class CI_DB_ibase_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Affected Rows
+	 * Database version number
 	 *
-	 * @return    int
+	 * @return	string
 	 */
-	public function affected_rows()
+	public function version()
 	{
-		return ibase_affected_rows($this->conn_id);
-	}
+		if (isset($this->data_cache['version']))
+		{
+			return $this->data_cache['version'];
+		}
 
-	// --------------------------------------------------------------------
+		if (($service = ibase_service_attach($this->hostname, $this->username, $this->password)))
+		{
+			$this->data_cache['version'] = ibase_server_info($service, IBASE_SVC_SERVER_VERSION);
 
-	/**
-	 * Insert ID
-	 *
-	 * @param    string $generator_name
-	 * @param    int $inc_by
-	 * @return    int
-	 */
-	public function insert_id($generator_name, $inc_by = 0)
-	{
-		//If a generator hasn't been used before it will return 0
-		return ibase_gen_id('"' . $generator_name . '"', $inc_by);
-	}
+			// Don't keep the service open
+			ibase_service_detach($service);
+			return $this->data_cache['version'];
+		}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns an object with field data
-	 *
-	 * @param    string $table
-	 * @return    array
-	 */
-	public function field_data($table)
-	{
-		$sql = 'SELECT "rfields"."RDB$FIELD_NAME" AS "name",
-				CASE "fields"."RDB$FIELD_TYPE"
-					WHEN 7 THEN \'SMALLINT\'
-					WHEN 8 THEN \'INTEGER\'
-					WHEN 9 THEN \'QUAD\'
-					WHEN 10 THEN \'FLOAT\'
-					WHEN 11 THEN \'DFLOAT\'
-					WHEN 12 THEN \'DATE\'
-					WHEN 13 THEN \'TIME\'
-					WHEN 14 THEN \'CHAR\'
-					WHEN 16 THEN \'INT64\'
-					WHEN 27 THEN \'DOUBLE\'
-					WHEN 35 THEN \'TIMESTAMP\'
-					WHEN 37 THEN \'VARCHAR\'
-					WHEN 40 THEN \'CSTRING\'
-					WHEN 261 THEN \'BLOB\'
-					ELSE NULL
-				END AS "type",
-				"fields"."RDB$FIELD_LENGTH" AS "max_length",
-				"rfields"."RDB$DEFAULT_VALUE" AS "default"
-			FROM "RDB$RELATION_FIELDS" "rfields"
-				JOIN "RDB$FIELDS" "fields" ON "rfields"."RDB$FIELD_SOURCE" = "fields"."RDB$FIELD_NAME"
-			WHERE "rfields"."RDB$RELATION_NAME" = ' . $this->escape($table) . '
-			ORDER BY "rfields"."RDB$FIELD_POSITION"';
-
-		return (($query = $this->query($sql)) !== FALSE)
-			? $query->result_object()
-			: FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Error
-	 *
-	 * Returns an array containing code and message of the last
-	 * database error that has occured.
-	 *
-	 * @return    array
-	 */
-	public function error()
-	{
-		return array('code' => ibase_errcode(), 'message' => ibase_errmsg());
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -242,6 +186,33 @@ class CI_DB_ibase_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Affected Rows
+	 *
+	 * @return	int
+	 */
+	public function affected_rows()
+	{
+		return ibase_affected_rows($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert ID
+	 *
+	 * @param	string	$generator_name
+	 * @param	int	$inc_by
+	 * @return	int
+	 */
+	public function insert_id($generator_name, $inc_by = 0)
+	{
+		//If a generator hasn't been used before it will return 0
+		return ibase_gen_id('"'.$generator_name.'"', $inc_by);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * List table query
 	 *
 	 * Generates a platform-specific query string so that the table names can be fetched
@@ -275,6 +246,61 @@ class CI_DB_ibase_driver extends CI_DB {
 	protected function _list_columns($table = '')
 	{
 		return 'SELECT TRIM("RDB$FIELD_NAME") AS COLUMN_NAME FROM "RDB$RELATION_FIELDS" WHERE "RDB$RELATION_NAME" = '.$this->escape($table);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns an object with field data
+	 *
+	 * @param	string	$table
+	 * @return	array
+	 */
+	public function field_data($table)
+	{
+		$sql = 'SELECT "rfields"."RDB$FIELD_NAME" AS "name",
+				CASE "fields"."RDB$FIELD_TYPE"
+					WHEN 7 THEN \'SMALLINT\'
+					WHEN 8 THEN \'INTEGER\'
+					WHEN 9 THEN \'QUAD\'
+					WHEN 10 THEN \'FLOAT\'
+					WHEN 11 THEN \'DFLOAT\'
+					WHEN 12 THEN \'DATE\'
+					WHEN 13 THEN \'TIME\'
+					WHEN 14 THEN \'CHAR\'
+					WHEN 16 THEN \'INT64\'
+					WHEN 27 THEN \'DOUBLE\'
+					WHEN 35 THEN \'TIMESTAMP\'
+					WHEN 37 THEN \'VARCHAR\'
+					WHEN 40 THEN \'CSTRING\'
+					WHEN 261 THEN \'BLOB\'
+					ELSE NULL
+				END AS "type",
+				"fields"."RDB$FIELD_LENGTH" AS "max_length",
+				"rfields"."RDB$DEFAULT_VALUE" AS "default"
+			FROM "RDB$RELATION_FIELDS" "rfields"
+				JOIN "RDB$FIELDS" "fields" ON "rfields"."RDB$FIELD_SOURCE" = "fields"."RDB$FIELD_NAME"
+			WHERE "rfields"."RDB$RELATION_NAME" = '.$this->escape($table).'
+			ORDER BY "rfields"."RDB$FIELD_POSITION"';
+
+		return (($query = $this->query($sql)) !== FALSE)
+			? $query->result_object()
+			: FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Error
+	 *
+	 * Returns an array containing code and message of the last
+	 * database error that has occured.
+	 *
+	 * @return	array
+	 */
+	public function error()
+	{
+		return array('code' => ibase_errcode(), 'message' => ibase_errmsg());
 	}
 
 	// --------------------------------------------------------------------
@@ -353,30 +379,6 @@ class CI_DB_ibase_driver extends CI_DB {
 		}
 
 		return preg_replace('`SELECT`i', 'SELECT '.$select, $sql, 1);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Database version number
-	 *
-	 * @return    string
-	 */
-	public function version()
-	{
-		if (isset($this->data_cache['version'])) {
-			return $this->data_cache['version'];
-		}
-
-		if (($service = ibase_service_attach($this->hostname, $this->username, $this->password))) {
-			$this->data_cache['version'] = ibase_server_info($service, IBASE_SVC_SERVER_VERSION);
-
-			// Don't keep the service open
-			ibase_service_detach($service);
-			return $this->data_cache['version'];
-		}
-
-		return FALSE;
 	}
 
 	// --------------------------------------------------------------------

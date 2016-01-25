@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -56,7 +56,7 @@ if ( ! class_exists('CI_Xmlrpc', FALSE))
  * @subpackage	Libraries
  * @category	XML-RPC
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
+ * @link		https://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class CI_Xmlrpcs extends CI_Xmlrpc {
 
@@ -110,35 +110,6 @@ class CI_Xmlrpcs extends CI_Xmlrpc {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Setting of System Methods
-	 *
-	 * @return    void
-	 */
-	public function set_system_methods()
-	{
-		$this->methods = array(
-			'system.listMethods' => array(
-				'function' => 'this.listMethods',
-				'signature' => array(array($this->xmlrpcArray, $this->xmlrpcString), array($this->xmlrpcArray)),
-				'docstring' => 'Returns an array of available methods on this server'),
-			'system.methodHelp' => array(
-				'function' => 'this.methodHelp',
-				'signature' => array(array($this->xmlrpcString, $this->xmlrpcString)),
-				'docstring' => 'Returns a documentation string for the specified method'),
-			'system.methodSignature' => array(
-				'function' => 'this.methodSignature',
-				'signature' => array(array($this->xmlrpcArray, $this->xmlrpcString)),
-				'docstring' => 'Returns an array describing the return type and required parameters of a method'),
-			'system.multicall' => array(
-				'function' => 'this.multicall',
-				'signature' => array(array($this->xmlrpcArray, $this->xmlrpcArray)),
-				'docstring' => 'Combine multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader$1208 for details')
-		);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Initialize Prefs and Serve
 	 *
 	 * @param	mixed
@@ -170,6 +141,35 @@ class CI_Xmlrpcs extends CI_Xmlrpc {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Setting of System Methods
+	 *
+	 * @return	void
+	 */
+	public function set_system_methods()
+	{
+		$this->methods = array(
+					'system.listMethods'	 => array(
+										'function' => 'this.listMethods',
+										'signature' => array(array($this->xmlrpcArray, $this->xmlrpcString), array($this->xmlrpcArray)),
+										'docstring' => 'Returns an array of available methods on this server'),
+					'system.methodHelp'	 => array(
+										'function' => 'this.methodHelp',
+										'signature' => array(array($this->xmlrpcString, $this->xmlrpcString)),
+										'docstring' => 'Returns a documentation string for the specified method'),
+					'system.methodSignature' => array(
+										'function' => 'this.methodSignature',
+										'signature' => array(array($this->xmlrpcArray, $this->xmlrpcString)),
+										'docstring' => 'Returns an array describing the return type and required parameters of a method'),
+					'system.multicall'	 => array(
+										'function' => 'this.multicall',
+										'signature' => array(array($this->xmlrpcArray, $this->xmlrpcArray)),
+										'docstring' => 'Combine multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader$1208 for details')
+				);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Main Server Function
 	 *
 	 * @return	void
@@ -182,6 +182,26 @@ class CI_Xmlrpcs extends CI_Xmlrpc {
 		header('Content-Type: text/xml');
 		header('Content-Length: '.strlen($payload));
 		exit($payload);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Add Method to Class
+	 *
+	 * @param	string	method name
+	 * @param	string	function
+	 * @param	string	signature
+	 * @param	string	docstring
+	 * @return	void
+	 */
+	public function add_to_map($methodname, $function, $sig, $doc)
+	{
+		$this->methods[$methodname] = array(
+			'function'	=> $function,
+			'signature'	=> $sig,
+			'docstring'	=> $doc
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -396,26 +416,6 @@ class CI_Xmlrpcs extends CI_Xmlrpc {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Add Method to Class
-	 *
-	 * @param    string    method name
-	 * @param    string    function
-	 * @param    string    signature
-	 * @param    string    docstring
-	 * @return    void
-	 */
-	public function add_to_map($methodname, $function, $sig, $doc)
-	{
-		$this->methods[$methodname] = array(
-			'function' => $function,
-			'signature' => $sig,
-			'docstring' => $doc
-		);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Server Function: List Methods
 	 *
 	 * @param	mixed
@@ -549,6 +549,25 @@ class CI_Xmlrpcs extends CI_Xmlrpc {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Multi-call Function: Error Handling
+	 *
+	 * @param	mixed
+	 * @return	object
+	 */
+	public function multicall_error($err)
+	{
+		$str = is_string($err) ? $this->xmlrpcstr["multicall_${err}"] : $err->faultString();
+		$code = is_string($err) ? $this->xmlrpcerr["multicall_${err}"] : $err->faultCode();
+
+		$struct['faultCode'] = new XML_RPC_Values($code, 'int');
+		$struct['faultString'] = new XML_RPC_Values($str, 'string');
+
+		return new XML_RPC_Values($struct, 'struct');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Multi-call Function: Processes method
 	 *
 	 * @param	mixed
@@ -601,25 +620,6 @@ class CI_Xmlrpcs extends CI_Xmlrpc {
 		}
 
 		return new XML_RPC_Values(array($result->value()), 'array');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Multi-call Function: Error Handling
-	 *
-	 * @param    mixed
-	 * @return    object
-	 */
-	public function multicall_error($err)
-	{
-		$str = is_string($err) ? $this->xmlrpcstr["multicall_${err}"] : $err->faultString();
-		$code = is_string($err) ? $this->xmlrpcerr["multicall_${err}"] : $err->faultCode();
-
-		$struct['faultCode'] = new XML_RPC_Values($code, 'int');
-		$struct['faultString'] = new XML_RPC_Values($str, 'string');
-
-		return new XML_RPC_Values($struct, 'struct');
 	}
 
 }

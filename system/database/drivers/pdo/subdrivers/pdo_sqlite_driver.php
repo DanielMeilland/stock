@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 3.0.0
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_pdo_sqlite_driver extends CI_DB_pdo_driver {
 
@@ -98,25 +98,50 @@ class CI_DB_pdo_sqlite_driver extends CI_DB_pdo_driver {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Show table query
+	 *
+	 * Generates a platform-specific query string so that the table names can be fetched
+	 *
+	 * @param	bool	$prefix_limit
+	 * @return	string
+	 */
+	protected function _list_tables($prefix_limit = FALSE)
+	{
+		$sql = 'SELECT "NAME" FROM "SQLITE_MASTER" WHERE "TYPE" = \'table\'';
+
+		if ($prefix_limit === TRUE && $this->dbprefix !== '')
+		{
+			return $sql.' AND "NAME" LIKE \''.$this->escape_like_str($this->dbprefix)."%' "
+				.sprintf($this->_like_escape_str, $this->_like_escape_chr);
+		}
+
+		return $sql;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Fetch Field Names
 	 *
-	 * @param    string $table Table name
-	 * @return    array
+	 * @param	string	$table	Table name
+	 * @return	array
 	 */
 	public function list_fields($table)
 	{
 		// Is there a cached result?
-		if (isset($this->data_cache['field_names'][$table])) {
+		if (isset($this->data_cache['field_names'][$table]))
+		{
 			return $this->data_cache['field_names'][$table];
 		}
 
-		if (($result = $this->query('PRAGMA TABLE_INFO(' . $this->protect_identifiers($table, TRUE, NULL, FALSE) . ')')) === FALSE)
+		if (($result = $this->query('PRAGMA TABLE_INFO('.$this->protect_identifiers($table, TRUE, NULL, FALSE).')')) === FALSE)
 		{
 			return FALSE;
 		}
 
 		$this->data_cache['field_names'][$table] = array();
-		foreach ($result->result_array() as $row) {
+		foreach ($result->result_array() as $row)
+		{
 			$this->data_cache['field_names'][$table][] = $row['name'];
 		}
 
@@ -156,28 +181,6 @@ class CI_DB_pdo_sqlite_driver extends CI_DB_pdo_driver {
 		}
 
 		return $retval;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Show table query
-	 *
-	 * Generates a platform-specific query string so that the table names can be fetched
-	 *
-	 * @param    bool $prefix_limit
-	 * @return    string
-	 */
-	protected function _list_tables($prefix_limit = FALSE)
-	{
-		$sql = 'SELECT "NAME" FROM "SQLITE_MASTER" WHERE "TYPE" = \'table\'';
-
-		if ($prefix_limit === TRUE && $this->dbprefix !== '') {
-			return $sql . ' AND "NAME" LIKE \'' . $this->escape_like_str($this->dbprefix) . "%' "
-			. sprintf($this->_like_escape_str, $this->_like_escape_chr);
-		}
-
-		return $sql;
 	}
 
 	// --------------------------------------------------------------------

@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.3.0
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_odbc_driver extends CI_DB {
 
@@ -128,45 +128,6 @@ class CI_DB_odbc_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Affected Rows
-	 *
-	 * @return    int
-	 */
-	public function affected_rows()
-	{
-		return odbc_num_rows($this->result_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert ID
-	 *
-	 * @return    bool
-	 */
-	public function insert_id()
-	{
-		return ($this->db->db_debug) ? $this->db->display_error('db_unsupported_feature') : FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Error
-	 *
-	 * Returns an array containing code and message of the last
-	 * database error that has occured.
-	 *
-	 * @return    array
-	 */
-	public function error()
-	{
-		return array('code' => odbc_error($this->conn_id), 'message' => odbc_errormsg($this->conn_id));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Execute the query
 	 *
 	 * @param	string	$sql	an SQL query
@@ -228,6 +189,24 @@ class CI_DB_odbc_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Determines if a query is a "write" type.
+	 *
+	 * @param	string	An SQL query string
+	 * @return	bool
+	 */
+	public function is_write_type($sql)
+	{
+		if (preg_match('#^(INSERT|UPDATE).*RETURNING\s.+(\,\s?.+)*$#i', $sql))
+		{
+			return FALSE;
+		}
+
+		return parent::is_write_type($sql);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Platform-dependant string escape
 	 *
 	 * @param	string
@@ -236,6 +215,30 @@ class CI_DB_odbc_driver extends CI_DB {
 	protected function _escape_str($str)
 	{
 		return remove_invisible_characters($str);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Affected Rows
+	 *
+	 * @return	int
+	 */
+	public function affected_rows()
+	{
+		return odbc_num_rows($this->result_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert ID
+	 *
+	 * @return	bool
+	 */
+	public function insert_id()
+	{
+		return ($this->db->db_debug) ? $this->db->display_error('db_unsupported_feature') : FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -289,6 +292,21 @@ class CI_DB_odbc_driver extends CI_DB {
 	protected function _field_data($table)
 	{
 		return 'SELECT TOP 1 FROM '.$table;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Error
+	 *
+	 * Returns an array containing code and message of the last
+	 * database error that has occured.
+	 *
+	 * @return	array
+	 */
+	public function error()
+	{
+		return array('code' => odbc_error($this->conn_id), 'message' => odbc_errormsg($this->conn_id));
 	}
 
 	// --------------------------------------------------------------------

@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_mysql_driver extends CI_DB {
 
@@ -84,7 +84,7 @@ class CI_DB_mysql_driver extends CI_DB {
 	 *
 	 * @var	bool
 	 */
-	public $stricton = FALSE;
+	public $stricton;
 
 	// --------------------------------------------------------------------
 
@@ -147,12 +147,47 @@ class CI_DB_mysql_driver extends CI_DB {
 				: FALSE;
 		}
 
-		if ($this->stricton && is_resource($this->conn_id))
+		if (isset($this->stricton) && is_resource($this->conn_id))
 		{
-			$this->simple_query('SET SESSION sql_mode="STRICT_ALL_TABLES"');
+			if ($this->stricton)
+			{
+				$this->simple_query('SET SESSION sql_mode = CONCAT(@@sql_mode, ",", "STRICT_ALL_TABLES")');
+			}
+			else
+			{
+				$this->simple_query(
+					'SET SESSION sql_mode =
+					REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+					@@sql_mode,
+					"STRICT_ALL_TABLES,", ""),
+					",STRICT_ALL_TABLES", ""),
+					"STRICT_ALL_TABLES", ""),
+					"STRICT_TRANS_TABLES,", ""),
+					",STRICT_TRANS_TABLES", ""),
+					"STRICT_TRANS_TABLES", "")'
+				);
+			}
 		}
 
 		return $this->conn_id;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Reconnect
+	 *
+	 * Keep / reestablish the db connection if no queries have been
+	 * sent for a length of time exceeding the server's idle timeout
+	 *
+	 * @return	void
+	 */
+	public function reconnect()
+	{
+		if (mysql_ping($this->conn_id) === FALSE)
+		{
+			$this->conn_id = FALSE;
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -182,18 +217,14 @@ class CI_DB_mysql_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Reconnect
+	 * Set client character set
 	 *
-	 * Keep / reestablish the db connection if no queries have been
-	 * sent for a length of time exceeding the server's idle timeout
-	 *
-	 * @return    void
+	 * @param	string	$charset
+	 * @return	bool
 	 */
-	public function reconnect()
+	protected function _db_set_charset($charset)
 	{
-		if (mysql_ping($this->conn_id) === FALSE) {
-			$this->conn_id = FALSE;
-		}
+		return mysql_set_charset($charset, $this->conn_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -216,90 +247,6 @@ class CI_DB_mysql_driver extends CI_DB {
 		}
 
 		return $this->data_cache['version'] = $version;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Affected Rows
-	 *
-	 * @return    int
-	 */
-	public function affected_rows()
-	{
-		return mysql_affected_rows($this->conn_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert ID
-	 *
-	 * @return    int
-	 */
-	public function insert_id()
-	{
-		return mysql_insert_id($this->conn_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns an object with field data
-	 *
-	 * @param    string $table
-	 * @return    array
-	 */
-	public function field_data($table)
-	{
-		if (($query = $this->query('SHOW COLUMNS FROM ' . $this->protect_identifiers($table, TRUE, NULL, FALSE))) === FALSE) {
-			return FALSE;
-		}
-		$query = $query->result_object();
-
-		$retval = array();
-		for ($i = 0, $c = count($query); $i < $c; $i++) {
-			$retval[$i] = new stdClass();
-			$retval[$i]->name = $query[$i]->Field;
-
-			sscanf($query[$i]->Type, '%[a-z](%d)',
-				$retval[$i]->type,
-				$retval[$i]->max_length
-			);
-
-			$retval[$i]->default = $query[$i]->Default;
-			$retval[$i]->primary_key = (int)($query[$i]->Key === 'PRI');
-		}
-
-		return $retval;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Error
-	 *
-	 * Returns an array containing code and message of the last
-	 * database error that has occured.
-	 *
-	 * @return    array
-	 */
-	public function error()
-	{
-		return array('code' => mysql_errno($this->conn_id), 'message' => mysql_error($this->conn_id));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set client character set
-	 *
-	 * @param    string $charset
-	 * @return    bool
-	 */
-	protected function _db_set_charset($charset)
-	{
-		return mysql_set_charset($charset, $this->conn_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -402,6 +349,30 @@ class CI_DB_mysql_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Affected Rows
+	 *
+	 * @return	int
+	 */
+	public function affected_rows()
+	{
+		return mysql_affected_rows($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert ID
+	 *
+	 * @return	int
+	 */
+	public function insert_id()
+	{
+		return mysql_insert_id($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * List table query
 	 *
 	 * Generates a platform-specific query string so that the table names can be fetched
@@ -434,6 +405,55 @@ class CI_DB_mysql_driver extends CI_DB {
 	protected function _list_columns($table = '')
 	{
 		return 'SHOW COLUMNS FROM '.$this->protect_identifiers($table, TRUE, NULL, FALSE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns an object with field data
+	 *
+	 * @param	string	$table
+	 * @return	array
+	 */
+	public function field_data($table)
+	{
+		if (($query = $this->query('SHOW COLUMNS FROM '.$this->protect_identifiers($table, TRUE, NULL, FALSE))) === FALSE)
+		{
+			return FALSE;
+		}
+		$query = $query->result_object();
+
+		$retval = array();
+		for ($i = 0, $c = count($query); $i < $c; $i++)
+		{
+			$retval[$i]			= new stdClass();
+			$retval[$i]->name		= $query[$i]->Field;
+
+			sscanf($query[$i]->Type, '%[a-z](%d)',
+				$retval[$i]->type,
+				$retval[$i]->max_length
+			);
+
+			$retval[$i]->default		= $query[$i]->Default;
+			$retval[$i]->primary_key	= (int) ($query[$i]->Key === 'PRI');
+		}
+
+		return $retval;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Error
+	 *
+	 * Returns an array containing code and message of the last
+	 * database error that has occured.
+	 *
+	 * @return	array
+	 */
+	public function error()
+	{
+		return array('code' => mysql_errno($this->conn_id), 'message' => mysql_error($this->conn_id));
 	}
 
 	// --------------------------------------------------------------------

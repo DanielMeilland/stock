@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -44,7 +44,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Parser
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/parser.html
+ * @link		https://codeigniter.com/user_guide/libraries/parser.html
  */
 class CI_Parser {
 
@@ -105,6 +105,24 @@ class CI_Parser {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Parse a String
+	 *
+	 * Parses pseudo-variables contained in the specified string,
+	 * replacing them with the data in the second param
+	 *
+	 * @param	string
+	 * @param	array
+	 * @param	bool
+	 * @return	string
+	 */
+	public function parse_string($template, $data, $return = FALSE)
+	{
+		return $this->_parse($template, $data, $return);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Parse a template
 	 *
 	 * Parses pseudo-variables contained in the specified template,
@@ -142,6 +160,36 @@ class CI_Parser {
 		}
 
 		return $template;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set the left/right variable delimiters
+	 *
+	 * @param	string
+	 * @param	string
+	 * @return	void
+	 */
+	public function set_delimiters($l = '{', $r = '}')
+	{
+		$this->l_delim = $l;
+		$this->r_delim = $r;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parse a single key/value
+	 *
+	 * @param	string
+	 * @param	string
+	 * @param	string
+	 * @return	string
+	 */
+	protected function _parse_single($key, $val, $string)
+	{
+		return array($this->l_delim.$key.$this->r_delim => (string) $val);
 	}
 
 	// --------------------------------------------------------------------
@@ -195,54 +243,6 @@ class CI_Parser {
 		}
 
 		return $replace;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Parse a single key/value
-	 *
-	 * @param    string
-	 * @param    string
-	 * @param    string
-	 * @return    string
-	 */
-	protected function _parse_single($key, $val, $string)
-	{
-		return array($this->l_delim . $key . $this->r_delim => (string)$val);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Parse a String
-	 *
-	 * Parses pseudo-variables contained in the specified string,
-	 * replacing them with the data in the second param
-	 *
-	 * @param    string
-	 * @param    array
-	 * @param    bool
-	 * @return    string
-	 */
-	public function parse_string($template, $data, $return = FALSE)
-	{
-		return $this->_parse($template, $data, $return);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set the left/right variable delimiters
-	 *
-	 * @param    string
-	 * @param    string
-	 * @return    void
-	 */
-	public function set_delimiters($l = '{', $r = '}')
-	{
-		$this->l_delim = $l;
-		$this->r_delim = $r;
 	}
 
 }

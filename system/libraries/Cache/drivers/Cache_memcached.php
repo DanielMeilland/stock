@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 2.0
  * @filesource
  */
@@ -75,7 +75,7 @@ class CI_Cache_memcached extends CI_Driver {
 	 *
 	 * Setup Memcache(d)
 	 *
-	 * @return    void
+	 * @return	void
 	 */
 	public function __construct()
 	{
@@ -83,30 +83,40 @@ class CI_Cache_memcached extends CI_Driver {
 		$CI =& get_instance();
 		$defaults = $this->_memcache_conf['default'];
 
-		if ($CI->config->load('memcached', TRUE, TRUE)) {
-			if (is_array($CI->config->config['memcached'])) {
+		if ($CI->config->load('memcached', TRUE, TRUE))
+		{
+			if (is_array($CI->config->config['memcached']))
+			{
 				$this->_memcache_conf = array();
 
-				foreach ($CI->config->config['memcached'] as $name => $conf) {
+				foreach ($CI->config->config['memcached'] as $name => $conf)
+				{
 					$this->_memcache_conf[$name] = $conf;
 				}
 			}
 		}
 
-		if (class_exists('Memcached', FALSE)) {
+		if (class_exists('Memcached', FALSE))
+		{
 			$this->_memcached = new Memcached();
-		} elseif (class_exists('Memcache', FALSE)) {
+		}
+		elseif (class_exists('Memcache', FALSE))
+		{
 			$this->_memcached = new Memcache();
-		} else {
+		}
+		else
+		{
 			log_message('error', 'Cache: Failed to create Memcache(d) object; extension not loaded?');
 		}
 
-		foreach ($this->_memcache_conf as $cache_server) {
+		foreach ($this->_memcache_conf as $cache_server)
+		{
 			isset($cache_server['hostname']) OR $cache_server['hostname'] = $defaults['host'];
 			isset($cache_server['port']) OR $cache_server['port'] = $defaults['port'];
 			isset($cache_server['weight']) OR $cache_server['weight'] = $defaults['weight'];
 
-			if (get_class($this->_memcached) === 'Memcache') {
+			if (get_class($this->_memcached) === 'Memcache')
+			{
 				// Third parameter is persistance and defaults to TRUE.
 				$this->_memcached->addServer(
 					$cache_server['hostname'],
@@ -114,7 +124,9 @@ class CI_Cache_memcached extends CI_Driver {
 					TRUE,
 					$cache_server['weight']
 				);
-			} else {
+			}
+			else
+			{
 				$this->_memcached->addServer(
 					$cache_server['hostname'],
 					$cache_server['port'],

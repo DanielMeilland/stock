@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.3.0
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_sqlite_driver extends CI_DB {
 
@@ -105,84 +105,10 @@ class CI_DB_sqlite_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Affected Rows
-	 *
-	 * @return    int
-	 */
-	public function affected_rows()
-	{
-		return sqlite_changes($this->conn_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert ID
-	 *
-	 * @return    int
-	 */
-	public function insert_id()
-	{
-		return sqlite_last_insert_rowid($this->conn_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns an object with field data
-	 *
-	 * @param    string $table
-	 * @return    array
-	 */
-	public function field_data($table)
-	{
-		if (($query = $this->query('PRAGMA TABLE_INFO(' . $this->protect_identifiers($table, TRUE, NULL, FALSE) . ')')) === FALSE)
-		{
-			return FALSE;
-		}
-
-		$query = $query->result_array();
-		if (empty($query)) {
-			return FALSE;
-		}
-
-		$retval = array();
-		for ($i = 0, $c = count($query); $i < $c; $i++) {
-			$retval[$i] = new stdClass();
-			$retval[$i]->name = $query[$i]['name'];
-			$retval[$i]->type = $query[$i]['type'];
-			$retval[$i]->max_length = NULL;
-			$retval[$i]->default = $query[$i]['dflt_value'];
-			$retval[$i]->primary_key = isset($query[$i]['pk']) ? (int)$query[$i]['pk'] : 0;
-		}
-
-		return $retval;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Error
-	 *
-	 * Returns an array containing code and message of the last
-	 * database error that has occured.
-	 *
-	 * @return    array
-	 */
-	public function error()
-	{
-		$error = array('code' => sqlite_last_error($this->conn_id));
-		$error['message'] = sqlite_error_string($error['code']);
-		return $error;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Execute the query
 	 *
-	 * @param    string $sql an SQL query
-	 * @return    resource
+	 * @param	string	$sql	an SQL query
+	 * @return	resource
 	 */
 	protected function _execute($sql)
 	{
@@ -208,7 +134,7 @@ class CI_DB_sqlite_driver extends CI_DB {
 	/**
 	 * Commit Transaction
 	 *
-	 * @return    bool
+	 * @return	bool
 	 */
 	protected function _trans_commit()
 	{
@@ -220,7 +146,7 @@ class CI_DB_sqlite_driver extends CI_DB {
 	/**
 	 * Rollback Transaction
 	 *
-	 * @return    bool
+	 * @return	bool
 	 */
 	protected function _trans_rollback()
 	{
@@ -232,12 +158,36 @@ class CI_DB_sqlite_driver extends CI_DB {
 	/**
 	 * Platform-dependant string escape
 	 *
-	 * @param    string
-	 * @return    string
+	 * @param	string
+	 * @return	string
 	 */
 	protected function _escape_str($str)
 	{
 		return sqlite_escape_string($str);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Affected Rows
+	 *
+	 * @return	int
+	 */
+	public function affected_rows()
+	{
+		return sqlite_changes($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert ID
+	 *
+	 * @return	int
+	 */
+	public function insert_id()
+	{
+		return sqlite_last_insert_rowid($this->conn_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -276,6 +226,58 @@ class CI_DB_sqlite_driver extends CI_DB {
 	{
 		// Not supported
 		return FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns an object with field data
+	 *
+	 * @param	string	$table
+	 * @return	array
+	 */
+	public function field_data($table)
+	{
+		if (($query = $this->query('PRAGMA TABLE_INFO('.$this->protect_identifiers($table, TRUE, NULL, FALSE).')')) === FALSE)
+		{
+			return FALSE;
+		}
+
+		$query = $query->result_array();
+		if (empty($query))
+		{
+			return FALSE;
+		}
+
+		$retval = array();
+		for ($i = 0, $c = count($query); $i < $c; $i++)
+		{
+			$retval[$i]			= new stdClass();
+			$retval[$i]->name		= $query[$i]['name'];
+			$retval[$i]->type		= $query[$i]['type'];
+			$retval[$i]->max_length		= NULL;
+			$retval[$i]->default		= $query[$i]['dflt_value'];
+			$retval[$i]->primary_key	= isset($query[$i]['pk']) ? (int) $query[$i]['pk'] : 0;
+		}
+
+		return $retval;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Error
+	 *
+	 * Returns an array containing code and message of the last
+	 * database error that has occured.
+	 *
+	 * @return	array
+	 */
+	public function error()
+	{
+		$error = array('code' => sqlite_last_error($this->conn_id));
+		$error['message'] = sqlite_error_string($error['code']);
+		return $error;
 	}
 
 	// --------------------------------------------------------------------

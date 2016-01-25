@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 2.1.0
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_pdo_driver extends CI_DB {
 
@@ -171,58 +171,6 @@ class CI_DB_pdo_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Affected Rows
-	 *
-	 * @return    int
-	 */
-	public function affected_rows()
-	{
-		return is_object($this->result_id) ? $this->result_id->rowCount() : 0;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert ID
-	 *
-	 * @param    string $name
-	 * @return    int
-	 */
-	public function insert_id($name = NULL)
-	{
-		return $this->conn_id->lastInsertId($name);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Error
-	 *
-	 * Returns an array containing code and message of the last
-	 * database error that has occured.
-	 *
-	 * @return    array
-	 */
-	public function error()
-	{
-		$error = array('code' => '00000', 'message' => '');
-		$pdo_error = $this->conn_id->errorInfo();
-
-		if (empty($pdo_error[0])) {
-			return $error;
-		}
-
-		$error['code'] = isset($pdo_error[1]) ? $pdo_error[0] . '/' . $pdo_error[1] : $pdo_error[0];
-		if (isset($pdo_error[2])) {
-			$error['message'] = $pdo_error[2];
-		}
-
-		return $error;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Execute the query
 	 *
 	 * @param	string	$sql	SQL query
@@ -291,6 +239,31 @@ class CI_DB_pdo_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Affected Rows
+	 *
+	 * @return	int
+	 */
+	public function affected_rows()
+	{
+		return is_object($this->result_id) ? $this->result_id->rowCount() : 0;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Insert ID
+	 *
+	 * @param	string	$name
+	 * @return	int
+	 */
+	public function insert_id($name = NULL)
+	{
+		return $this->conn_id->lastInsertId($name);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Field data query
 	 *
 	 * Generates a platform-specific query so that the column data can be retrieved
@@ -301,6 +274,35 @@ class CI_DB_pdo_driver extends CI_DB {
 	protected function _field_data($table)
 	{
 		return 'SELECT TOP 1 * FROM '.$this->protect_identifiers($table);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Error
+	 *
+	 * Returns an array containing code and message of the last
+	 * database error that has occured.
+	 *
+	 * @return	array
+	 */
+	public function error()
+	{
+		$error = array('code' => '00000', 'message' => '');
+		$pdo_error = $this->conn_id->errorInfo();
+
+		if (empty($pdo_error[0]))
+		{
+			return $error;
+		}
+
+		$error['code'] = isset($pdo_error[1]) ? $pdo_error[0].'/'.$pdo_error[1] : $pdo_error[0];
+		if (isset($pdo_error[2]))
+		{
+			 $error['message'] = $pdo_error[2];
+		}
+
+		return $error;
 	}
 
 	// --------------------------------------------------------------------

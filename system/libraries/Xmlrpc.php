@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -51,7 +51,7 @@ if ( ! function_exists('xml_parser_create'))
  * @subpackage	Libraries
  * @category	XML-RPC
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
+ * @link		https://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class CI_Xmlrpc {
 
@@ -430,6 +430,19 @@ class CI_Xmlrpc {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Set Debug
+	 *
+	 * @param	bool	$flag
+	 * @return	void
+	 */
+	public function set_debug($flag = TRUE)
+	{
+		$this->debug = ($flag === TRUE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Values Parsing
 	 *
 	 * @param	mixed	$value
@@ -462,19 +475,6 @@ class CI_Xmlrpc {
 		}
 
 		return $temp;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set Debug
-	 *
-	 * @param    bool $flag
-	 * @return    void
-	 */
-	public function set_debug($flag = TRUE)
-	{
-		$this->debug = ($flag === TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -559,7 +559,7 @@ class CI_Xmlrpc {
  *
  * @category	XML-RPC
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
+ * @link		https://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Client extends CI_Xmlrpc
 {
@@ -740,18 +740,25 @@ class XML_RPC_Client extends CI_Xmlrpc
 			if (($result = fwrite($fp, substr($op, $written))) === FALSE)
 			{
 				break;
-			} // See https://bugs.php.net/bug.php?id=39598 and http://php.net/manual/en/function.fwrite.php#96951
-			elseif ($result === 0) {
-				if ($timestamp === 0) {
+			}
+			// See https://bugs.php.net/bug.php?id=39598 and http://php.net/manual/en/function.fwrite.php#96951
+			elseif ($result === 0)
+			{
+				if ($timestamp === 0)
+				{
 					$timestamp = time();
-				} elseif ($timestamp < (time() - $this->timeout)) {
+				}
+				elseif ($timestamp < (time() - $this->timeout))
+				{
 					$result = FALSE;
 					break;
 				}
 
 				usleep(250000);
 				continue;
-			} else {
+			}
+			else
+			{
 				$timestamp = 0;
 			}
 		}
@@ -774,7 +781,7 @@ class XML_RPC_Client extends CI_Xmlrpc
  *
  * @category	XML-RPC
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
+ * @link		https://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Response
 {
@@ -1023,7 +1030,7 @@ class XML_RPC_Response
  *
  * @category	XML-RPC
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
+ * @link		https://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Message extends CI_Xmlrpc
 {
@@ -1642,7 +1649,7 @@ class XML_RPC_Message extends CI_Xmlrpc
  *
  * @category	XML-RPC
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
+ * @link		https://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Values extends CI_Xmlrpc
 {
@@ -1763,27 +1770,6 @@ class XML_RPC_Values extends CI_Xmlrpc
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get value type
-	 *
-	 * @return    string
-	 */
-	public function kindOf()
-	{
-		switch ($this->mytype) {
-			case 3:
-				return 'struct';
-			case 2:
-				return 'array';
-			case 1:
-				return 'scalar';
-			default:
-				return 'undef';
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Add struct value
 	 *
 	 * @param	object
@@ -1799,6 +1785,24 @@ class XML_RPC_Values extends CI_Xmlrpc
 		$this->mytype = $this->xmlrpcTypes['struct'];
 		$this->me['struct'] = $vals;
 		return 1;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get value type
+	 *
+	 * @return	string
+	 */
+	public function kindOf()
+	{
+		switch ($this->mytype)
+		{
+			case 3: return 'struct';
+			case 2: return 'array';
+			case 1: return 'scalar';
+			default: return 'undef';
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1862,9 +1866,21 @@ class XML_RPC_Values extends CI_Xmlrpc
 	// --------------------------------------------------------------------
 
 	/**
+	 * Serialize class
+	 *
+	 * @return	string
+	 */
+	public function serialize_class()
+	{
+		return $this->serializeval($this);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Serialize value
 	 *
-	 * @param    object
+	 * @param	object
 	 * @return	string
 	 */
 	public function serializeval($o)
@@ -1873,19 +1889,7 @@ class XML_RPC_Values extends CI_Xmlrpc
 		reset($ar);
 
 		list($typ, $val) = each($ar);
-		return "<value>\n" . $this->serializedata($typ, $val) . "</value>\n";
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Serialize class
-	 *
-	 * @return	string
-	 */
-	public function serialize_class()
-	{
-		return $this->serializeval($this);
+		return "<value>\n".$this->serializedata($typ, $val)."</value>\n";
 	}
 
 	// --------------------------------------------------------------------

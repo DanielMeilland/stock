@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 3.0.0
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_pdo_pgsql_driver extends CI_DB_pdo_driver {
 
@@ -154,7 +154,32 @@ class CI_DB_pdo_pgsql_driver extends CI_DB_pdo_driver {
 	 */
 	public function is_write_type($sql)
 	{
-		return (bool) preg_match('/^\s*"?(SET|INSERT(?![^\)]+\)\s+RETURNING)|UPDATE(?!.*\sRETURNING)|DELETE|CREATE|DROP|TRUNCATE|LOAD|COPY|ALTER|RENAME|GRANT|REVOKE|LOCK|UNLOCK|REINDEX)\s/i', str_replace(array("\r\n", "\r", "\n"), ' ', $sql));
+		if (preg_match('#^(INSERT|UPDATE).*RETURNING\s.+(\,\s?.+)*$#i', $sql))
+		{
+			return FALSE;
+		}
+
+		return parent::is_write_type($sql);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * "Smart" Escape String
+	 *
+	 * Escapes data based on type
+	 *
+	 * @param	string	$str
+	 * @return	mixed
+	 */
+	public function escape($str)
+	{
+		if (is_bool($str))
+		{
+			return ($str) ? 'TRUE' : 'FALSE';
+		}
+
+		return parent::escape($str);
 	}
 
 	// --------------------------------------------------------------------
@@ -190,37 +215,6 @@ class CI_DB_pdo_pgsql_driver extends CI_DB_pdo_driver {
 		}
 
 		return parent::order_by($orderby, $direction, $escape);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns an object with field data
-	 *
-	 * @param    string $table
-	 * @return    array
-	 */
-	public function field_data($table)
-	{
-		$sql = 'SELECT "column_name", "data_type", "character_maximum_length", "numeric_precision", "column_default"
-			FROM "information_schema"."columns"
-			WHERE LOWER("table_name") = ' . $this->escape(strtolower($table));
-
-		if (($query = $this->query($sql)) === FALSE) {
-			return FALSE;
-		}
-		$query = $query->result_object();
-
-		$retval = array();
-		for ($i = 0, $c = count($query); $i < $c; $i++) {
-			$retval[$i] = new stdClass();
-			$retval[$i]->name = $query[$i]->column_name;
-			$retval[$i]->type = $query[$i]->data_type;
-			$retval[$i]->max_length = ($query[$i]->character_maximum_length > 0) ? $query[$i]->character_maximum_length : $query[$i]->numeric_precision;
-			$retval[$i]->default = $query[$i]->column_default;
-		}
-
-		return $retval;
 	}
 
 	// --------------------------------------------------------------------
@@ -267,21 +261,34 @@ class CI_DB_pdo_pgsql_driver extends CI_DB_pdo_driver {
 	// --------------------------------------------------------------------
 
 	/**
-	 * "Smart" Escape String
+	 * Returns an object with field data
 	 *
-	 * Escapes data based on type
-	 *
-	 * @param    string $str
-	 * @return    mixed
+	 * @param	string	$table
+	 * @return	array
 	 */
-	public function escape($str)
+	public function field_data($table)
 	{
-		if (is_bool($str))
+		$sql = 'SELECT "column_name", "data_type", "character_maximum_length", "numeric_precision", "column_default"
+			FROM "information_schema"."columns"
+			WHERE LOWER("table_name") = '.$this->escape(strtolower($table));
+
+		if (($query = $this->query($sql)) === FALSE)
 		{
-			return ($str) ? 'TRUE' : 'FALSE';
+			return FALSE;
+		}
+		$query = $query->result_object();
+
+		$retval = array();
+		for ($i = 0, $c = count($query); $i < $c; $i++)
+		{
+			$retval[$i]			= new stdClass();
+			$retval[$i]->name		= $query[$i]->column_name;
+			$retval[$i]->type		= $query[$i]->data_type;
+			$retval[$i]->max_length		= ($query[$i]->character_maximum_length > 0) ? $query[$i]->character_maximum_length : $query[$i]->numeric_precision;
+			$retval[$i]->default		= $query[$i]->column_default;
 		}
 
-		return parent::escape($str);
+		return $retval;
 	}
 
 	// --------------------------------------------------------------------

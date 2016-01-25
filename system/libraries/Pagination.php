@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -44,22 +44,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Pagination
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/pagination.html
+ * @link		https://codeigniter.com/user_guide/libraries/pagination.html
  */
 class CI_Pagination {
 
-	/**
-	 * Items per page
-	 *
-	 * @var    int
-	 */
-	public $per_page = 10;
-	/**
-	 * Current page
-	 *
-	 * @var    int
-	 */
-	public $cur_page = 0;
 	/**
 	 * Base URL
 	 *
@@ -68,24 +56,28 @@ class CI_Pagination {
 	 * @var	string
 	 */
 	protected $base_url		= '';
+
 	/**
 	 * Prefix
 	 *
 	 * @var	string
 	 */
 	protected $prefix = '';
+
 	/**
 	 * Suffix
 	 *
 	 * @var	string
 	 */
 	protected $suffix = '';
+
 	/**
 	 * Total number of items
 	 *
 	 * @var	int
 	 */
 	protected $total_rows = 0;
+
 	/**
 	 * Number of links to show
 	 *
@@ -95,6 +87,21 @@ class CI_Pagination {
 	 * @var	int
 	 */
 	protected $num_links = 2;
+
+	/**
+	 * Items per page
+	 *
+	 * @var	int
+	 */
+	public $per_page = 10;
+
+	/**
+	 * Current page
+	 *
+	 * @var	int
+	 */
+	public $cur_page = 0;
+
 	/**
 	 * Use page numbers flag
 	 *
@@ -385,28 +392,6 @@ class CI_Pagination {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Parse attributes
-	 *
-	 * @param    array $attributes
-	 * @return    void
-	 */
-	protected function _parse_attributes($attributes)
-	{
-		isset($attributes['rel']) OR $attributes['rel'] = TRUE;
-		$this->_link_types = ($attributes['rel'])
-			? array('start' => 'start', 'prev' => 'prev', 'next' => 'next')
-			: array();
-		unset($attributes['rel']);
-
-		$this->_attributes = '';
-		foreach ($attributes as $key => $value) {
-			$this->_attributes .= ' ' . $key . '="' . $value . '"';
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Generate the pagination links
 	 *
 	 * @return	string
@@ -629,7 +614,7 @@ class CI_Pagination {
 					else
 					{
 						$append = $this->prefix.$i.$this->suffix;
-						$output .= $this->num_tag_open . '<a href="' . $base_url . $append . '"' . $attributes . '>'
+						$output .= $this->num_tag_open.'<a href="'.$base_url.$append.'"'.$attributes.'>'
 							.$loop.'</a>'.$this->num_tag_close;
 					}
 				}
@@ -664,6 +649,29 @@ class CI_Pagination {
 
 		// Add the wrapper HTML if exists
 		return $this->full_tag_open.$output.$this->full_tag_close;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Parse attributes
+	 *
+	 * @param	array	$attributes
+	 * @return	void
+	 */
+	protected function _parse_attributes($attributes)
+	{
+		isset($attributes['rel']) OR $attributes['rel'] = TRUE;
+		$this->_link_types = ($attributes['rel'])
+			? array('start' => 'start', 'prev' => 'prev', 'next' => 'next')
+			: array();
+		unset($attributes['rel']);
+
+		$this->_attributes = '';
+		foreach ($attributes as $key => $value)
+		{
+			$this->_attributes .= ' '.$key.'="'.$value.'"';
+		}
 	}
 
 	// --------------------------------------------------------------------

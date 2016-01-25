@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -50,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Libraries
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/general/profiling.html
+ * @link		https://codeigniter.com/user_guide/general/profiling.html
  */
 class CI_Profiler {
 
@@ -138,34 +138,6 @@ class CI_Profiler {
 				$this->_compile_{$method} = ($enable !== FALSE);
 			}
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Run the Profiler
-	 *
-	 * @return    string
-	 */
-	public function run()
-	{
-		$output = '<div id="codeigniter_profiler" style="clear:both;background-color:#fff;padding:10px;">';
-		$fields_displayed = 0;
-
-		foreach ($this->_available_sections as $section) {
-			if ($this->_compile_{$section} !== FALSE) {
-				$func = '_compile_' . $section;
-				$output .= $this->{$func}();
-				$fields_displayed++;
-			}
-		}
-
-		if ($fields_displayed === 0) {
-			$output .= '<p style="border:1px solid #5a0099;padding:10px;margin:20px 0;background-color:#eee;">'
-				. $this->CI->lang->line('profiler_no_profiles') . '</p>';
-		}
-
-		return $output . '</div>';
 	}
 
 	// --------------------------------------------------------------------
@@ -562,6 +534,37 @@ class CI_Profiler {
 		}
 
 		return $output."</table>\n</fieldset>";
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Run the Profiler
+	 *
+	 * @return	string
+	 */
+	public function run()
+	{
+		$output = '<div id="codeigniter_profiler" style="clear:both;background-color:#fff;padding:10px;">';
+		$fields_displayed = 0;
+
+		foreach ($this->_available_sections as $section)
+		{
+			if ($this->_compile_{$section} !== FALSE)
+			{
+				$func = '_compile_'.$section;
+				$output .= $this->{$func}();
+				$fields_displayed++;
+			}
+		}
+
+		if ($fields_displayed === 0)
+		{
+			$output .= '<p style="border:1px solid #5a0099;padding:10px;margin:20px 0;background-color:#eee;">'
+				.$this->CI->lang->line('profiler_no_profiles').'</p>';
+		}
+
+		return $output.'</div>';
 	}
 
 }

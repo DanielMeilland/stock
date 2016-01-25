@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.4.1
  * @filesource
  */
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage  Drivers
  * @category	Database
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 
 /**
@@ -252,12 +252,38 @@ class CI_DB_oci8_driver extends CI_DB {
 			return $this->data_cache['version'];
 		}
 
-		if ( ! $this->conn_id OR ($version = oci_server_version($this->conn_id)) === FALSE)
+		if ( ! $this->conn_id OR ($version_string = oci_server_version($this->conn_id)) === FALSE)
 		{
 			return FALSE;
 		}
+		elseif (preg_match('#Release\s(\d+(?:\.\d+)+)#', $version_string, $match))
+		{
+			return $this->data_cache['version'] = $match[1];
+		}
 
-		return $this->data_cache['version'] = $version;
+		return FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Execute the query
+	 *
+	 * @param	string	$sql	an SQL query
+	 * @return	resource
+	 */
+	protected function _execute($sql)
+	{
+		/* Oracle must parse the query before it is run. All of the actions with
+		 * the query are based on the statement id returned by oci_parse().
+		 */
+		if ($this->_reset_stmt_id === TRUE)
+		{
+			$this->stmt_id = oci_parse($this->conn_id, $sql);
+		}
+
+		oci_set_prefetch($this->stmt_id, 1000);
+		return oci_execute($this->stmt_id, $this->commit_mode);
 	}
 
 	// --------------------------------------------------------------------
@@ -354,6 +380,46 @@ class CI_DB_oci8_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Begin Transaction
+	 *
+	 * @return	bool
+	 */
+	protected function _trans_begin()
+	{
+		$this->commit_mode = is_php('5.3.2') ? OCI_NO_AUTO_COMMIT : OCI_DEFAULT;
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Commit Transaction
+	 *
+	 * @return	bool
+	 */
+	protected function _trans_commit()
+	{
+		$this->commit_mode = OCI_COMMIT_ON_SUCCESS;
+
+		return oci_commit($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Rollback Transaction
+	 *
+	 * @return	bool
+	 */
+	protected function _trans_rollback()
+	{
+		$this->commit_mode = OCI_COMMIT_ON_SUCCESS;
+		return oci_rollback($this->conn_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Affected Rows
 	 *
 	 * @return	int
@@ -374,6 +440,55 @@ class CI_DB_oci8_driver extends CI_DB {
 	{
 		// not supported in oracle
 		return $this->display_error('db_unsupported_function');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Show table query
+	 *
+	 * Generates a platform-specific query string so that the table names can be fetched
+	 *
+	 * @param	bool	$prefix_limit
+	 * @return	string
+	 */
+	protected function _list_tables($prefix_limit = FALSE)
+	{
+		$sql = 'SELECT "TABLE_NAME" FROM "ALL_TABLES"';
+
+		if ($prefix_limit !== FALSE && $this->dbprefix !== '')
+		{
+			return $sql.' WHERE "TABLE_NAME" LIKE \''.$this->escape_like_str($this->dbprefix)."%' "
+				.sprintf($this->_like_escape_str, $this->_like_escape_chr);
+		}
+
+		return $sql;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Show column query
+	 *
+	 * Generates a platform-specific query string so that the column names can be fetched
+	 *
+	 * @param	string	$table
+	 * @return	string
+	 */
+	protected function _list_columns($table = '')
+	{
+		if (strpos($table, '.') !== FALSE)
+		{
+			sscanf($table, '%[^.].%s', $owner, $table);
+		}
+		else
+		{
+			$owner = $this->username;
+		}
+
+		return 'SELECT COLUMN_NAME FROM ALL_TAB_COLUMNS
+			WHERE UPPER(OWNER) = '.$this->escape(strtoupper($owner)).'
+				AND UPPER(TABLE_NAME) = '.$this->escape(strtoupper($table));
 	}
 
 	// --------------------------------------------------------------------
@@ -466,112 +581,6 @@ class CI_DB_oci8_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Execute the query
-	 *
-	 * @param    string $sql an SQL query
-	 * @return    resource
-	 */
-	protected function _execute($sql)
-	{
-		/* Oracle must parse the query before it is run. All of the actions with
-		 * the query are based on the statement id returned by oci_parse().
-		 */
-		if ($this->_reset_stmt_id === TRUE) {
-			$this->stmt_id = oci_parse($this->conn_id, $sql);
-		}
-
-		oci_set_prefetch($this->stmt_id, 1000);
-		return oci_execute($this->stmt_id, $this->commit_mode);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Begin Transaction
-	 *
-	 * @return    bool
-	 */
-	protected function _trans_begin()
-	{
-		$this->commit_mode = is_php('5.3.2') ? OCI_NO_AUTO_COMMIT : OCI_DEFAULT;
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Commit Transaction
-	 *
-	 * @return    bool
-	 */
-	protected function _trans_commit()
-	{
-		$this->commit_mode = OCI_COMMIT_ON_SUCCESS;
-
-		return oci_commit($this->conn_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Rollback Transaction
-	 *
-	 * @return    bool
-	 */
-	protected function _trans_rollback()
-	{
-		$this->commit_mode = OCI_COMMIT_ON_SUCCESS;
-		return oci_rollback($this->conn_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Show table query
-	 *
-	 * Generates a platform-specific query string so that the table names can be fetched
-	 *
-	 * @param    bool $prefix_limit
-	 * @return    string
-	 */
-	protected function _list_tables($prefix_limit = FALSE)
-	{
-		$sql = 'SELECT "TABLE_NAME" FROM "ALL_TABLES"';
-
-		if ($prefix_limit !== FALSE && $this->dbprefix !== '') {
-			return $sql . ' WHERE "TABLE_NAME" LIKE \'' . $this->escape_like_str($this->dbprefix) . "%' "
-			. sprintf($this->_like_escape_str, $this->_like_escape_chr);
-		}
-
-		return $sql;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Show column query
-	 *
-	 * Generates a platform-specific query string so that the column names can be fetched
-	 *
-	 * @param    string $table
-	 * @return    string
-	 */
-	protected function _list_columns($table = '')
-	{
-		if (strpos($table, '.') !== FALSE) {
-			sscanf($table, '%[^.].%s', $owner, $table);
-		} else {
-			$owner = $this->username;
-		}
-
-		return 'SELECT COLUMN_NAME FROM ALL_TAB_COLUMNS
-			WHERE UPPER(OWNER) = ' . $this->escape(strtoupper($owner)) . '
-				AND UPPER(TABLE_NAME) = ' . $this->escape(strtoupper($table));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Insert batch statement
 	 *
 	 * Generates a platform-specific insert string from the supplied data
@@ -645,6 +654,14 @@ class CI_DB_oci8_driver extends CI_DB {
 	 */
 	protected function _limit($sql)
 	{
+		if (version_compare($this->version(), '12.1', '>='))
+		{
+			// OFFSET-FETCH can be used only with the ORDER BY clause
+			empty($this->qb_orderby) && $sql .= ' ORDER BY 1';
+
+			return $sql.' OFFSET '.(int) $this->qb_offset.' ROWS FETCH NEXT '.$this->qb_limit.' ROWS ONLY';
+		}
+
 		$this->limit_used = TRUE;
 		return 'SELECT * FROM (SELECT inner_query.*, rownum rnum FROM ('.$sql.') inner_query WHERE rownum < '.($this->qb_offset + $this->qb_limit + 1).')'
 			.($this->qb_offset ? ' WHERE rnum >= '.($this->qb_offset + 1) : '');

@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 3.0.0
  * @filesource
  */
@@ -44,9 +44,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * @category	Database
  * @author		Andrey Andreev
- * @link		http://codeigniter.com/user_guide/database/
+ * @link		https://codeigniter.com/user_guide/database/
  */
 class CI_DB_sqlite3_result extends CI_DB_result {
+
+	/**
+	 * Number of fields in the result set
+	 *
+	 * @return	int
+	 */
+	public function num_fields()
+	{
+		return $this->result_id->numColumns();
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Field Names
@@ -64,18 +76,6 @@ class CI_DB_sqlite3_result extends CI_DB_result {
 		}
 
 		return $field_names;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Number of fields in the result set
-	 *
-	 * @return    int
-	 */
-	public function num_fields()
-	{
-		return $this->result_id->numColumns();
 	}
 
 	// --------------------------------------------------------------------
@@ -131,24 +131,6 @@ class CI_DB_sqlite3_result extends CI_DB_result {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Data Seek
-	 *
-	 * Moves the internal pointer to the desired offset. We call
-	 * this internally before fetching results to make sure the
-	 * result set starts at zero.
-	 *
-	 * @param    int $n (ignored)
-	 * @return    array
-	 */
-	public function data_seek($n = 0)
-	{
-		// Only resetting to the start of the result set is supported
-		return ($n > 0) ? FALSE : $this->result_id->reset();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Result - associative array
 	 *
 	 * Returns the result set as an array
@@ -189,6 +171,24 @@ class CI_DB_sqlite3_result extends CI_DB_result {
 		}
 
 		return $class_name;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Data Seek
+	 *
+	 * Moves the internal pointer to the desired offset. We call
+	 * this internally before fetching results to make sure the
+	 * result set starts at zero.
+	 *
+	 * @param	int	$n	(ignored)
+	 * @return	array
+	 */
+	public function data_seek($n = 0)
+	{
+		// Only resetting to the start of the result set is supported
+		return ($n > 0) ? FALSE : $this->result_id->reset();
 	}
 
 }

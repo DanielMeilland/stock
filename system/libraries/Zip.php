@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -50,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Encryption
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/zip.html
+ * @link		https://codeigniter.com/user_guide/libraries/zip.html
  */
 class CI_Zip {
 
@@ -213,35 +213,6 @@ class CI_Zip {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Read the contents of a file and add it to the zip
-	 *
-	 * @param    string $path
-	 * @param    bool $archive_filepath
-	 * @return    bool
-	 */
-	public function read_file($path, $archive_filepath = FALSE)
-	{
-		if (file_exists($path) && FALSE !== ($data = file_get_contents($path))) {
-			if (is_string($archive_filepath)) {
-				$name = str_replace('\\', '/', $archive_filepath);
-			} else {
-				$name = str_replace('\\', '/', $path);
-
-				if ($archive_filepath === FALSE) {
-					$name = preg_replace('|.*/(.+)|', '\\1', $name);
-				}
-			}
-
-			$this->add_data($name, $data);
-			return TRUE;
-		}
-
-		return FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Add Data to Zip
 	 *
 	 * Lets you add files to the archive. If the path is included
@@ -322,6 +293,40 @@ class CI_Zip {
 		$this->file_num++;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Read the contents of a file and add it to the zip
+	 *
+	 * @param	string	$path
+	 * @param	bool	$archive_filepath
+	 * @return	bool
+	 */
+	public function read_file($path, $archive_filepath = FALSE)
+	{
+		if (file_exists($path) && FALSE !== ($data = file_get_contents($path)))
+		{
+			if (is_string($archive_filepath))
+			{
+				$name = str_replace('\\', '/', $archive_filepath);
+			}
+			else
+			{
+				$name = str_replace('\\', '/', $path);
+
+				if ($archive_filepath === FALSE)
+				{
+					$name = preg_replace('|.*/(.+)|', '\\1', $name);
+				}
+			}
+
+			$this->add_data($name, $data);
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -347,7 +352,7 @@ class CI_Zip {
 		// Set the original directory root for child dir's to use as relative
 		if ($root_path === NULL)
 		{
-			$root_path = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, dirname($path)) . DIRECTORY_SEPARATOR;
+			$root_path = str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, dirname($path)).DIRECTORY_SEPARATOR;
 		}
 
 		while (FALSE !== ($file = readdir($fp)))
@@ -375,6 +380,30 @@ class CI_Zip {
 
 		closedir($fp);
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the Zip file
+	 *
+	 * @return	string	(binary encoded)
+	 */
+	public function get_zip()
+	{
+		// Is there any data to return?
+		if ($this->entries === 0)
+		{
+			return FALSE;
+		}
+
+		return $this->zipdata
+			.$this->directory."\x50\x4b\x05\x06\x00\x00\x00\x00"
+			.pack('v', $this->entries) // total # of entries "on this disk"
+			.pack('v', $this->entries) // total # of entries overall
+			.pack('V', strlen($this->directory)) // size of central dir
+			.pack('V', strlen($this->zipdata)) // offset to start of central dir
+			."\x00\x00"; // .zip file comment length
 	}
 
 	// --------------------------------------------------------------------
@@ -408,29 +437,6 @@ class CI_Zip {
 		fclose($fp);
 
 		return is_int($result);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get the Zip file
-	 *
-	 * @return    string    (binary encoded)
-	 */
-	public function get_zip()
-	{
-		// Is there any data to return?
-		if ($this->entries === 0) {
-			return FALSE;
-		}
-
-		return $this->zipdata
-		. $this->directory . "\x50\x4b\x05\x06\x00\x00\x00\x00"
-		. pack('v', $this->entries) // total # of entries "on this disk"
-		. pack('v', $this->entries) // total # of entries overall
-		. pack('V', strlen($this->directory)) // size of central dir
-		. pack('V', strlen($this->zipdata)) // offset to start of central dir
-		. "\x00\x00"; // .zip file comment length
 	}
 
 	// --------------------------------------------------------------------

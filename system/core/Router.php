@@ -6,7 +6,7 @@
  *
  * This content is released under the MIT License (MIT)
  *
- * Copyright (c) 2014 - 2015, British Columbia Institute of Technology
+ * Copyright (c) 2014 - 2016, British Columbia Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@
  *
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (https://ellislab.com/)
+ * @copyright	Copyright (c) 2014 - 2016, British Columbia Institute of Technology (http://bcit.ca/)
  * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
+ * @link	https://codeigniter.com
  * @since	Version 1.0.0
  * @filesource
  */
@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage	Libraries
  * @category	Libraries
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/general/routing.html
+ * @link		https://codeigniter.com/user_guide/general/routing.html
  */
 class CI_Router {
 
@@ -118,6 +118,7 @@ class CI_Router {
 	 *
 	 * Runs the route mapping function.
 	 *
+	 * @param	array	$routing
 	 * @return	void
 	 */
 	public function __construct($routing = NULL)
@@ -135,28 +136,10 @@ class CI_Router {
 		if (is_array($routing))
 		{
 			empty($routing['controller']) OR $this->set_class($routing['controller']);
-			empty($routing['function']) OR $this->set_method($routing['function']);
+			empty($routing['function'])   OR $this->set_method($routing['function']);
 		}
 
 		log_message('info', 'Router Class Initialized');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set directory name
-	 *
-	 * @param    string $dir Directory name
-	 * @param    bool $append Whether we're appending rather than setting the full value
-	 * @return    void
-	 */
-	public function set_directory($dir, $append = FALSE)
-	{
-		if ($append !== TRUE OR empty($this->directory)) {
-			$this->directory = str_replace('.', '', trim($dir, '/')) . '/';
-		} else {
-			$this->directory .= str_replace('.', '', trim($dir, '/')) . '/';
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -174,16 +157,19 @@ class CI_Router {
 		// Load the routes.php file. It would be great if we could
 		// skip this for enable_query_strings = TRUE, but then
 		// default_controller would be empty ...
-		if (file_exists(APPPATH . 'config/routes.php')) {
-			include(APPPATH . 'config/routes.php');
+		if (file_exists(APPPATH.'config/routes.php'))
+		{
+			include(APPPATH.'config/routes.php');
 		}
 
-		if (file_exists(APPPATH . 'config/' . ENVIRONMENT . '/routes.php')) {
-			include(APPPATH . 'config/' . ENVIRONMENT . '/routes.php');
+		if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/routes.php'))
+		{
+			include(APPPATH.'config/'.ENVIRONMENT.'/routes.php');
 		}
 
 		// Validate & get reserved routes
-		if (isset($route) && is_array($route)) {
+		if (isset($route) && is_array($route))
+		{
 			isset($route['default_controller']) && $this->default_controller = $route['default_controller'];
 			isset($route['translate_uri_dashes']) && $this->translate_uri_dashes = $route['translate_uri_dashes'];
 			unset($route['default_controller'], $route['translate_uri_dashes']);
@@ -196,12 +182,13 @@ class CI_Router {
 		if ($this->enable_query_strings)
 		{
 			// If the directory is set at this time, it means an override exists, so skip the checks
-			if (!isset($this->directory))
+			if ( ! isset($this->directory))
 			{
 				$_d = $this->config->item('directory_trigger');
 				$_d = isset($_GET[$_d]) ? trim($_GET[$_d], " \t\n\r\0\x0B/") : '';
 
-				if ($_d !== '') {
+				if ($_d !== '')
+				{
 					$this->uri->filter_uri($_d);
 					$this->set_directory($_d);
 				}
@@ -249,27 +236,48 @@ class CI_Router {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Set class name
+	 * Set request route
 	 *
-	 * @param    string $class Class name
+	 * Takes an array of URI segments as input and sets the class/method
+	 * to be called.
+	 *
+	 * @used-by	CI_Router::_parse_routes()
+	 * @param	array	$segments	URI segments
 	 * @return	void
 	 */
-	public function set_class($class)
+	protected function _set_request($segments = array())
 	{
-		$this->class = str_replace(array('/', '.'), '', $class);
-	}
+		$segments = $this->_validate_request($segments);
+		// If we don't have any segments left - try the default controller;
+		// WARNING: Directories get shifted out of the segments array!
+		if (empty($segments))
+		{
+			$this->_set_default_controller();
+			return;
+		}
 
-	// --------------------------------------------------------------------
+		if ($this->translate_uri_dashes === TRUE)
+		{
+			$segments[0] = str_replace('-', '_', $segments[0]);
+			if (isset($segments[1]))
+			{
+				$segments[1] = str_replace('-', '_', $segments[1]);
+			}
+		}
 
-	/**
-	 * Set method name
-	 *
-	 * @param    string $method Method name
-	 * @return    void
-	 */
-	public function set_method($method)
-	{
-		$this->method = $method;
+		$this->set_class($segments[0]);
+		if (isset($segments[1]))
+		{
+			$this->set_method($segments[1]);
+		}
+		else
+		{
+			$segments[1] = 'index';
+		}
+
+		array_unshift($segments, NULL);
+		unset($segments[0]);
+		$this->uri->rsegments = $segments;
 	}
 
 	// --------------------------------------------------------------------
@@ -308,6 +316,45 @@ class CI_Router {
 		);
 
 		log_message('debug', 'No URI present. Default controller set.');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Validate request
+	 *
+	 * Attempts validate the URI request and determine the controller path.
+	 *
+	 * @used-by	CI_Router::_set_request()
+	 * @param	array	$segments	URI segments
+	 * @return	mixed	URI segments
+	 */
+	protected function _validate_request($segments)
+	{
+		$c = count($segments);
+		$directory_override = isset($this->directory);
+
+		// Loop through our segments and return as soon as a controller
+		// is found or when such a directory doesn't exist
+		while ($c-- > 0)
+		{
+			$test = $this->directory
+				.ucfirst($this->translate_uri_dashes === TRUE ? str_replace('-', '_', $segments[0]) : $segments[0]);
+
+			if ( ! file_exists(APPPATH.'controllers/'.$test.'.php')
+				&& $directory_override === FALSE
+				&& is_dir(APPPATH.'controllers/'.$this->directory.$segments[0])
+			)
+			{
+				$this->set_directory(array_shift($segments), TRUE);
+				continue;
+			}
+
+			return $segments;
+		}
+
+		// This means that all segments were actually directories
+		return $segments;
 	}
 
 	// --------------------------------------------------------------------
@@ -379,79 +426,14 @@ class CI_Router {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Set request route
+	 * Set class name
 	 *
-	 * Takes an array of URI segments as input and sets the class/method
-	 * to be called.
-	 *
-	 * @used-by    CI_Router::_parse_routes()
-	 * @param    array $segments URI segments
+	 * @param	string	$class	Class name
 	 * @return	void
 	 */
-	protected function _set_request($segments = array())
+	public function set_class($class)
 	{
-		$segments = $this->_validate_request($segments);
-		// If we don't have any segments left - try the default controller;
-		// WARNING: Directories get shifted out of the segments array!
-		if (empty($segments)) {
-			$this->_set_default_controller();
-			return;
-		}
-
-		if ($this->translate_uri_dashes === TRUE) {
-			$segments[0] = str_replace('-', '_', $segments[0]);
-			if (isset($segments[1])) {
-				$segments[1] = str_replace('-', '_', $segments[1]);
-			}
-		}
-
-		$this->set_class($segments[0]);
-		if (isset($segments[1])) {
-			$this->set_method($segments[1]);
-		} else {
-			$segments[1] = 'index';
-		}
-
-		array_unshift($segments, NULL);
-		unset($segments[0]);
-		$this->uri->rsegments = $segments;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Validate request
-	 *
-	 * Attempts validate the URI request and determine the controller path.
-	 *
-	 * @used-by    CI_Router::_set_request()
-	 * @param    array $segments URI segments
-	 * @return    mixed    URI segments
-	 */
-	protected function _validate_request($segments)
-	{
-		$c = count($segments);
-		$directory_override = isset($this->directory);
-
-		// Loop through our segments and return as soon as a controller
-		// is found or when such a directory doesn't exist
-		while ($c-- > 0) {
-			$test = $this->directory
-				. ucfirst($this->translate_uri_dashes === TRUE ? str_replace('-', '_', $segments[0]) : $segments[0]);
-
-			if (!file_exists(APPPATH . 'controllers/' . $test . '.php')
-				&& $directory_override === FALSE
-				&& is_dir(APPPATH . 'controllers/' . $this->directory . $segments[0])
-			) {
-				$this->set_directory(array_shift($segments), TRUE);
-				continue;
-			}
-
-			return $segments;
-		}
-
-		// This means that all segments were actually directories
-		return $segments;
+		$this->class = str_replace(array('/', '.'), '', $class);
 	}
 
 	// --------------------------------------------------------------------
@@ -459,12 +441,25 @@ class CI_Router {
 	/**
 	 * Fetch the current class
 	 *
-	 * @deprecated    3.0.0    Read the 'class' property instead
-	 * @return    string
+	 * @deprecated	3.0.0	Read the 'class' property instead
+	 * @return	string
 	 */
 	public function fetch_class()
 	{
 		return $this->class;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set method name
+	 *
+	 * @param	string	$method	Method name
+	 * @return	void
+	 */
+	public function set_method($method)
+	{
+		$this->method = $method;
 	}
 
 	// --------------------------------------------------------------------
@@ -478,6 +473,27 @@ class CI_Router {
 	public function fetch_method()
 	{
 		return $this->method;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set directory name
+	 *
+	 * @param	string	$dir	Directory name
+	 * @param	bool	$append	Whether we're appending rather than setting the full value
+	 * @return	void
+	 */
+	public function set_directory($dir, $append = FALSE)
+	{
+		if ($append !== TRUE OR empty($this->directory))
+		{
+			$this->directory = str_replace('.', '', trim($dir, '/')).'/';
+		}
+		else
+		{
+			$this->directory .= str_replace('.', '', trim($dir, '/')).'/';
+		}
 	}
 
 	// --------------------------------------------------------------------
