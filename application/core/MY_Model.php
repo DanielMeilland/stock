@@ -29,7 +29,7 @@ class MY_Model extends CI_Model
      * This model's default primary key or unique identifier.
      * Used by the get(), update() and delete() functions.
      */
-    protected $primary_key = 'id';
+    protected $primary_key = 'user_id';
 
     /**
      * Support for soft deletes and this model's 'deleted' key

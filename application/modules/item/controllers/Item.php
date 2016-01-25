@@ -11,6 +11,11 @@ class Item extends CI_Controller
         parent::__construct();
         $this->load->model('item_model', 'item');
         $this->output->enable_profiler(TRUE);
+        $this->template
+            ->set_partial('header', 'partials/dashboard_header')
+            ->set_partial('navbar', 'partials/dashboard_navbar')
+            ->set_partial('footer', 'partials/dashboard_footer')
+            ->set_layout('dashboard');
     }
 
     /**
@@ -21,12 +26,10 @@ class Item extends CI_Controller
     public function index()
     {
         $this->data['items'] = $this->item->get_all();
-
-        return $this->template
-            ->set_partial('header', 'partials/dashboard_header')
-            ->set_partial('navbar', 'partials/dashboard_navbar')
-            ->set_partial('footer', 'partials/dashboard_footer')
-            ->set_layout('dashboard')->set($this->data)->build('index');
+        if (empty($this->data['items'])) {
+            show_404();
+        }
+        $this->template->set($this->data)->build('index');
     }
 
     /**
@@ -37,11 +40,7 @@ class Item extends CI_Controller
     public function create()
     {
         if ($this->form_validation->run() == false) {
-            return $this->template
-                ->set_partial('header', 'partials/dashboard_header')
-                ->set_partial('navbar', 'partials/dashboard_navbar')
-                ->set_partial('footer', 'partials/dashboard_footer')
-                ->set_layout('dashboard')->build('create');
+            return $this->template->build('create');
         } else {
             return $this->store();
         }
@@ -61,12 +60,7 @@ class Item extends CI_Controller
     public function read($id = null)
     {
         $this->data['item'] = $this->item->get($id);
-
-        $this->template
-            ->set_partial('header', 'partials/dashboard_header')
-            ->set_partial('navbar', 'partials/dashboard_navbar')
-            ->set_partial('footer', 'partials/dashboard_footer')
-            ->set_layout('dashboard')->set($this->data)->build('show');
+        $this->template->set($this->data)->build('show');
     }
 
     /**
@@ -79,13 +73,8 @@ class Item extends CI_Controller
     {
         $this->data['item'] = $this->item->get($id);
         $this->data['suppliers'] = $this->item->suppliers_list();
-
         if ($this->form_validation->run() == false) {
-            $this->template
-                ->set_partial('header', 'partials/dashboard_header')
-                ->set_partial('navbar', 'partials/dashboard_navbar')
-                ->set_partial('footer', 'partials/dashboard_footer')
-                ->set_layout('dashboard')->set($this->data)->build('edit');
+            $this->template->set($this->data)->build('edit');
         } else {
             $this->update($this->data);
         }

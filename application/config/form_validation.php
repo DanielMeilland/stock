@@ -18,18 +18,22 @@
 $config = [
 
     'authentification/register' => [
-        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[users.username],
+        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|alpha_numeric|min_length[3]|max_length[64]|is_unique[users.username],
         [\'is_unique\' => \'This username already exists. Please choose another one.\']'],
+        ['field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email'],
         ['field' => 'firstname', 'label' => 'First name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
         ['field' => 'lastname', 'label' => 'Last name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
         ['field' => 'password', 'label' => 'Password', 'rules' => 'trim|required|min_length[8]'],
-        ['field' => 'confirm_password', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]'],
-        ['field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email']
+        ['field' => 'password_confirm', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]']
     ],
 
     'authentification/login' => [
         ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
         ['field' => 'password', 'label' => 'Password', 'rules' => 'trim|required|min_length[8]'],
+    ],
+
+    'authentification/forgot_password' => [
+        ['field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email']
     ],
 
     'users/add' => [

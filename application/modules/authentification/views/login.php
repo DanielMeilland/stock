@@ -1,8 +1,7 @@
 <section class="container">
-
     <section class="row">
-
-        <?= form_open('', ['role' => 'login']); ?>
+        <?= form_open(); ?>
+        <?= form_fieldset('Login', ['class' => 'text-muted']); ?>
         <?php $error = form_error("username", "<p class='text-danger'>", '</p>'); ?>
         <div class="form-group <?= $error ? 'has-error' : '' ?>">
             <?= form_label('Username', 'username', ['class' => 'label-control']); ?>
@@ -13,7 +12,6 @@
             </div>
             <?= $error; ?>
         </div>
-
         <?php $error = form_error("password", "<p class='text-danger'>", '</p>'); ?>
         <div class="form-group <?= $error ? 'has-error' : '' ?>">
             <?= form_label('Password', 'password', ['class' => 'label-control']); ?>
@@ -24,25 +22,15 @@
             </div>
             <?= $error; ?>
         </div>
-
         <div class="form-group">
             <input type="checkbox" name="remember" value="1"/> Remember me
+            <a href="<?= site_url('authentification/forgot_password'); ?>" class="pull-right">Forgot your password ?</a>
         </div>
-
         <div class="well center-block" style="max-width:400px">
-            <?= form_submit('envoyer', 'Se connecter', ['class' => 'btn btn-primary btn-block']); ?>
+            <?= form_submit('login', 'Se connecter', ['class' => 'btn btn-primary btn-block']); ?>
             <a href="<?= site_url(); ?>" class="btn btn-default btn-block">Retour à l'accueil</a>
         </div>
-
-        <section>
-            <a href="#">Forgot your password ?</a>
-        </section>
-
-        <p class="footer">Page rendered in <strong>{elapsed_time}</strong>
-            seconds. <?php echo (ENVIRONMENT === 'development') ? 'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?>
-        </p>
-
+        <?= form_fieldset_close(); ?>
         <?= form_close(); ?>
     </section>
-
 </section>

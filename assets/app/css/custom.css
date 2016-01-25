@@ -29,7 +29,7 @@ body {
 }
 
 .media img, .fileinput .thumbnail, .thumbnail img {
-    border-radius: 50%;
+    border-radius: 0%;
 }
 
 .media-left {

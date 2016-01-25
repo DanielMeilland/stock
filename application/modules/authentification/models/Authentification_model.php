@@ -18,14 +18,15 @@ class Authentification_model extends CI_Model
         parent::__construct();
     }
 
+    /**
+     * @return int
+     */
     public function validate()
     {
         $this->username = $this->input->post('username');
         $this->password = $this->input->post('password');
-
         $this->db->where("username", $this->username);
         $query = $this->db->get($this->_table);
-
         if ($query->num_rows()) {
             $row = $query->row_array();
             if (password_verify($this->password, $row['password'])) {
@@ -37,9 +38,11 @@ class Authentification_model extends CI_Model
         } else {
             return ERR_INVALID_USERNAME;
         }
-
     }
 
+    /**
+     *
+     */
     public function get_data()
     {
         return $this->set_session();

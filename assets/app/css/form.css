@@ -13,12 +13,15 @@ body {
 
 #logo {
     text-align: center;
-    padding: 60px 0 55px 0;
+    padding-top: 10px;
+    padding-right: 0;
+    padding-left: 0;
+    padding-bottom: 10px;
     border-bottom: 2px solid #c5c5c5;
     background: #fff;
 }
 
-form[role=login] {
+form {
     font: 14px/1.6em Lato, serif;
     padding-top: 24px;
     color: #959595;
@@ -26,33 +29,31 @@ form[role=login] {
     margin: 0 auto;
 }
 
-form[role=login] .input-group-addon {
+form .input-group-addon {
     border: none;
     background: #fff;
 }
 
-form[role=login] input[type=text],
-form[role=login] input[type=password] {
+form input[type=text],
+form input[type=password] {
     border: none;
     background: #fff;
     box-shadow: none;
     height: 36px;
-    -webkit-box-shadow: 1px 1px 2px 0px rgba(104, 104, 104, 0.4);
-    -moz-box-shadow: 1px 1px 2px 0px rgba(104, 104, 104, 0.4);
-    box-shadow: 1px 1px 2px 0px rgba(104, 104, 104, 0.4);
+
 }
 
-form[role=login] input[type=text]:focus,
-form[role=login] input[type=password]:focus {
+form input[type=text]:focus,
+form input[type=password]:focus {
     background: #f6f6f6;
 }
 
-form[role=login] > div {
+form > div {
     position: relative;
     margin: 24px 0;
 }
 
-form[role=login] > section {
+form > section {
     margin: 20px 0;
     text-align: center;
 }
@@ -65,5 +66,8 @@ form[role=login] > section {
     position: absolute;
     left: 0;
     top: 13%;
-    padding: 8px 0 0 12px;
+    padding-top: 8px;
+    padding-right: 0;
+    padding-left: 12px;
+    padding-bottom: 0;
 }
