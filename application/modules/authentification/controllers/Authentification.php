@@ -30,6 +30,12 @@ class Authentification extends MY_Controller
         redirect('authentification/login');
     }
 
+    public function test($password)
+    {
+        //$test = password_hash($password, PASSWORD_DEFAULT);
+        var_dump($test);
+    }
+
     /**
      *
      */
@@ -54,10 +60,11 @@ class Authentification extends MY_Controller
     /**
      *
      */
-    public function forgot_password(){
-        if ($this->form_validation->run() == false){
+    public function forgot_password()
+    {
+        if ($this->form_validation->run() == false) {
             $this->template->build('forgot_password');
-        }else{
+        } else {
             die('indisponible');
         }
     }

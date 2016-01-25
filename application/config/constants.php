@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
@@ -87,7 +86,6 @@ defined('EXIT__AUTO_MAX') OR define('EXIT__AUTO_MAX', 125); // highest automatic
 /*
  * Auth Exit Status Codes
  */
-
 define('ERR_NONE', 0);
 define('ERR_INVALID_USERNAME', 1);
 define('ERR_INVALID_PASSWORD', 2);

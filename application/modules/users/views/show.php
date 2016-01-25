@@ -19,14 +19,14 @@
                             <div class="form-group">
                                 <label for="name" class="control-label col-md-3">First name</label>
                                 <div class="col-md-8">
-                                    <p class="form-control-static"><?= htmlspecialchars($user->firstname); ?></p>
+                                    <p class="form-control-static"><?= htmlspecialchars($user->first_name); ?></p>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="name" class="control-label col-md-3">Last name</label>
                                 <div class="col-md-8">
-                                    <p class="form-control-static"><?= htmlspecialchars($user->lastname); ?></p>
+                                    <p class="form-control-static"><?= htmlspecialchars($user->last_name); ?></p>
                                 </div>
                             </div>
 
