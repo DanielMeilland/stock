@@ -15,12 +15,13 @@
                 <li class=""><a href="<?= site_url('home'); ?>">Home</a></li>
                 <li class=""><a href="<?= site_url('dashboard'); ?>">Dashboard</a></li>
                 <li class=""><a href="<?= site_url('item'); ?>">Item</a></li>
+                <li class=""><a href="<?= site_url('users'); ?>">users</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <?php if ($this->session->userdata("logged_in")): ?>
-                    <li><a href="<?= site_url("authentification/logout") ?>">Logout</a></li>
+                <?php if ($this->ion_auth->logged_in()): ?>
+                    <li><a href="<?= site_url("auth/logout") ?>">Logout</a></li>
                 <?php else : ?>
-                    <li><a href="<?= site_url("authentification/login") ?>">Login</a></li>
+                    <li><a href="<?= site_url("auth/login") ?>">Login</a></li>
                 <?php endif; ?>
             </ul>
         </div><!--/.nav-collapse -->
