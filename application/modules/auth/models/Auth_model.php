@@ -4,15 +4,22 @@
  * Created by PhpStorm.
  * User: jeffreymostroso
  * Date: 29.01.16
- * Time: 00:10
+ * Time: 00:11
  */
-class User_model extends MY_Model
+class Auth_model extends CI_Model
 {
-    public $validate = [];
-
     public function __construct()
     {
         parent::__construct();
     }
 
+    public function login()
+    {
+
+    }
+
+    public function logout()
+    {
+
+    }
 }

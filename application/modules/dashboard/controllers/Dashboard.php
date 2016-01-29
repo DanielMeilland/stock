@@ -1,39 +1,30 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 /**
- * Created by PhpStorm.
- * User: jeffreymostroso
- * Date: 17.01.16
- * Time: 18:49
+ * Dashboard Class
+ *
+ * @package     Dashboard
+ * @subpackage  CodeIgniter HMVC Module
+ * @category    Modules
+ * @author      Jeffrey Mostroso
+ * @link        https://github.com/jeffrey-omega
  */
-class Dashboard extends MY_Controller
+class Dashboard extends CI_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('session');
-        $this->template
-            ->set_partial('header', 'partials/dashboard_header')
-            ->set_partial('navbar', 'partials/dashboard_navbar')
-            ->set_partial('footer', 'partials/dashboard_footer')
-            ->set_layout('dashboard');
     }
 
+    /**
+     * Display a listing of items
+     *
+     * @return Response
+     */
     public function index()
     {
-        if (!$this->ion_auth->logged_in()) {
-            // redirect them to the login page
-            redirect('auth/login', 'refresh');
-        } elseif (!$this->ion_auth->is_admin()) // remove this elseif if you want to enable this for non-admins
-        {
-            // redirect them to the home page because they must be an administrator to view this
-            return show_error('You must be an administrator to view this page.');
-        }
-        $this->template->build('dashboard');
+//        $items = $this->item->get_all();
+//        $this->template->set($items)->build('index');
     }
 
-    public function form()
-    {
-        $this->template->build('form');
-    }
 }

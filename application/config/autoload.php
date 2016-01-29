@@ -57,7 +57,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = ['database', 'template', 'session', 'form_validation', 'auth/ion_auth'];
+$autoload['libraries'] = ['database', 'template', 'session', 'form_validation'];
 
 /*
 | -------------------------------------------------------------------
@@ -96,7 +96,7 @@ $autoload['helper'] = ['url', 'html', 'form', 'date', 'language'];
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array();
+$autoload['config'] = [];
 
 /*
 | -------------------------------------------------------------------
@@ -110,7 +110,7 @@ $autoload['config'] = array();
 | "codeigniter_lang.php" would be referenced as array('codeigniter');
 |
 */
-$autoload['language'] = array();
+$autoload['language'] = [];
 
 /*
 | -------------------------------------------------------------------
