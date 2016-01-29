@@ -17,7 +17,12 @@ class Items extends CI_Controller
     {
         parent::__construct();
         $this->load->model('item_model', 'item');
-        $this->output->enable_profiler(TRUE);
+        $this->item->skip_validation();
+        $this->load->model('supplier_model', 'supplier');
+        $this->load->model('stocking_place_model', 'stocking_place');
+        $this->load->library("pagination");
+
+        //$this->output->enable_profiler(TRUE);
         $this->template
             ->set_partial('header', 'partials/dashboard/header')
             ->set_partial('navbar', 'partials/dashboard/navbar')
@@ -32,11 +37,25 @@ class Items extends CI_Controller
      */
     public function index()
     {
-        $this->data['items'] = $this->item->get_all();
-        $this->data['suppliers'] = $this->item->suppliers_list();
-        if (empty($this->data['items'])) {
-            show_404();
-        }
+        $config = [];
+        $config["base_url"] = base_url() . "items/index";
+        $config["total_rows"] = $this->item->record_count();
+        $config["per_page"] = 5;
+        $config["uri_segment"] = 3;
+        $choice = $config["total_rows"] / $config["per_page"];
+        $config["num_links"] = round($choice);
+        $this->pagination->initialize($config);
+
+        $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+
+        $this->data["items"] = $this->item
+            ->with('supplier')
+            ->with('stocking_place')
+            ->limit($config["per_page"], $page)
+            ->get_all();
+        $this->data['stocking_places'] = $this->stocking_place->stocking_place_list();
+        $this->data['suppliers'] = $this->supplier->suppliers_list();
+        $this->data["links"] = $this->pagination->create_links();
         $this->template->set($this->data)->build('index');
     }
 
@@ -48,9 +67,9 @@ class Items extends CI_Controller
     public function create()
     {
         if ($this->form_validation->run() == false) {
-            return $this->template->build('create');
+            $this->template->build('create');
         } else {
-            return $this->store();
+            $this->store();
         }
     }
 
@@ -61,8 +80,29 @@ class Items extends CI_Controller
      */
     public function store()
     {
-        $this->item->skip_validation();
+        $this->data = [
+            'name' => $this->input->post('name'),
+            'description' => $this->input->post('description'),
+            'supplier_id' => $this->input->post('supplier_id'),
+            'supplier_ref' => $this->input->post('supplier_ref'),
+            'buying_price' => $this->input->post('buying_price'),
+            'buying_date' => $this->input->post('buying_date'),
+            'warranty_duration' => $this->input->post('warranty_duration'),
+            'file_number' => $this->input->post('file_number'),
+            'serial_number' => $this->input->post('serial_number'),
+            'remarks' => $this->input->post('remarks'),
+            'image' => $this->input->post('image'),
+            'created_by_user_id' => $this->input->post('created_by_user_id'),
+            'created_date' => $this->input->post('created_date'),
+            'modified_by_user_id' => $this->input->post('modified_by_user_id'),
+            'modified_date' => $this->input->post('modified_date'),
+            'control_by_user_id' => $this->input->post('control_by_user_id'),
+            'control_date' => $this->input->post('control_date'),
+            'stocking_place_id' => $this->input->post('stocking_place_id'),
+            'item_state_id' => $this->input->post('item_state_id'),
+        ];
         $this->item->insert($this->data);
+        redirect('items', 'refresh');
     }
 
     /**
@@ -73,7 +113,10 @@ class Items extends CI_Controller
      */
     public function show($id)
     {
-        $this->data['item'] = $this->item->get($id);
+        $this->data['item'] = $this->item
+            ->with('supplier')
+            ->with('stocking_place')
+            ->get($id);
         $this->template->set($this->data)->build('show');
     }
 
@@ -85,12 +128,17 @@ class Items extends CI_Controller
      */
     public function edit($id)
     {
-        $this->data['item'] = $this->item->get($id);
-        $this->data['suppliers'] = $this->item->suppliers_list();
+        $this->data['item'] = $this->item
+            ->with('supplier')
+            ->with('stocking_place')
+            ->get($id);
+
+        $this->data['stocking_places'] = $this->stocking_place->stocking_place_list();
+        $this->data['suppliers'] = $this->supplier->suppliers_list();
         if ($this->form_validation->run() == false) {
             $this->template->set($this->data)->build('edit');
         } else {
-            $this->update($this->data);
+            $this->update($id);
         }
     }
 
@@ -102,8 +150,29 @@ class Items extends CI_Controller
      */
     public function update($id)
     {
-        $this->item->update($id);
-        redirect('item', 'refresh');
+        $this->data = [
+            'name' => $this->input->post('name'),
+            'description' => $this->input->post('description'),
+            'supplier_id' => $this->input->post('supplier_id'),
+            'supplier_ref' => $this->input->post('supplier_ref'),
+            'buying_price' => $this->input->post('buying_price'),
+            'buying_date' => $this->input->post('buying_date'),
+            'warranty_duration' => $this->input->post('warranty_duration'),
+            'file_number' => $this->input->post('file_number'),
+            'serial_number' => $this->input->post('serial_number'),
+            'remarks' => $this->input->post('remarks'),
+            'image' => $this->input->post('image'),
+            'created_by_user_id' => $this->input->post('created_by_user_id'),
+            'created_date' => $this->input->post('created_date'),
+            'modified_by_user_id' => $this->input->post('modified_by_user_id'),
+            'modified_date' => $this->input->post('modified_date'),
+            'control_by_user_id' => $this->input->post('control_by_user_id'),
+            'control_date' => $this->input->post('control_date'),
+            'stocking_place_id' => $this->input->post('stocking_place_id'),
+            'item_state_id' => $this->input->post('item_state_id'),
+        ];
+        $this->item->update($id, $this->data);
+        redirect('items', 'refresh');
     }
 
     /**
@@ -115,7 +184,7 @@ class Items extends CI_Controller
     public function destroy($id)
     {
         $this->item->delete($id);
-        redirect('item', 'refresh');
+        redirect('items', 'refresh');
     }
 
 }

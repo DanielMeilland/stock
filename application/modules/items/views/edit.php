@@ -8,7 +8,7 @@
                     <strong>Edite : <?= htmlspecialchars($item->name); ?></strong>
                 </div>
                 <div class="panel-body">
-                    <?= form_open_multipart('item/edit/' . $item->item_id, ['classe' => 'form-horizontal']); ?>
+                    <?= form_open_multipart('items/edit/' . $item->item_id, ['classe' => 'form-horizontal']); ?>
                     <div class="row">
                         <div class="col-md-8">
 
@@ -20,9 +20,13 @@
                             </div>
 
                             <div class="form-group">
-                                <?= form_label('Lieu :', 'stocking_place', ['class' => 'control-label col-md-3']); ?>
+                                <?= form_label('Lieu :', 'stocking_place_id', ['class' => 'control-label col-md-3']); ?>
                                 <div class="col-md-8">
-                                    <?= form_input('stocking_place', set_value('stocking_place', $item->item_state_id, true), ['class' => 'form-control']); ?>
+                                    <?php if (!isset($item->stocking_place->stocking_place_id)): ?>
+                                        <?= form_dropdown('stocking_place_id', $stocking_places, '', ['class' => 'form-control']); ?>
+                                    <?php else: ?>
+                                        <?= form_dropdown('stocking_place_id', $stocking_places, $item->stocking_place->stocking_place_id, ['class' => 'form-control']); ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -36,11 +40,11 @@
                             <div class="form-group">
                                 <?= form_label('Fournisseur :', 'supplier', ['class' => 'control-label col-md-3']); ?>
                                 <div class="col-md-8">
-                                    <select name="suppliers">
-                                        <?php foreach ($suppliers as $supplier): ?>
-                                            <option value="<?= $supplier->name ?>"><?= $supplier->name ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <?php if (!isset($item->supplier->supplier_id)): ?>
+                                        <?= form_dropdown('supplier_id', $suppliers, '', ['class' => 'form-control']); ?>
+                                    <?php else: ?>
+                                        <?= form_dropdown('supplier_id', $suppliers, $item->supplier->supplier_id, ['class' => 'form-control']); ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -58,32 +62,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="group" class="control-label col-md-3">Group</label>
-                                <div class="col-md-5">
-                                    <select name="group" id="group" class="form-control">
-                                        <option value="">Select group</option>
-                                        <option value="1">Family</option>
-                                        <option value="2">Friend</option>
-                                        <option value="3">Other</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <a href="#" id="add-group-btn" class="btn btn-default btn-block">Add Group</a>
-                                </div>
-                            </div>
-                            <div class="form-group" id="add-new-group">
-                                <div class="col-md-offset-3 col-md-8">
-                                    <div class="input-group">
-                                        <input type="text" name="new_group" id="new_group" class="form-control">
-                                          <span class="input-group-btn">
-                                            <a href="#" class="btn btn-default">
-                                                <i class="glyphicon glyphicon-ok"></i>
-                                            </a>
-                                          </span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="col-md-4">
@@ -105,7 +83,6 @@
                         </div>
                     </div>
 
-                    <?= form_close(); ?>
                 </div>
 
                 <div class="panel-footer">
@@ -114,7 +91,7 @@
                             <div class="row">
                                 <div class="col-md-offset-3 col-md-6">
                                     <button type="submit" class="btn btn-primary">Save</button>
-                                    <a href="#" class="btn btn-default">Cancel</a>
+                                    <a href="<?=site_url('items'); ?>" class="btn btn-default">Cancel</a>
                                     <!-- Button vard_dump modal -->
                                     <?= form_button('var_dump', 'var_dump', ['class' => 'btn btn-warning', 'data-toggle' => 'modal', 'data-target' => '#myModal']); ?>
                                 </div>
@@ -122,7 +99,7 @@
                         </div>
                     </div>
                 </div>
-
+                <?= form_close(); ?>
             </div>
         </div>
     </div>
@@ -139,7 +116,6 @@
             </div>
             <div class="modal-body">
                 <?php var_dump($item); ?>
-                <?php var_dump($suppliers); ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -8,7 +8,7 @@
                     <h3 class="page-header">Ajouter un Item</h3>
                 </div>
                 <div class="panel-body">
-                    <?= form_open_multipart('items/create', ['classe' => 'form-horizontal']); ?>
+                    <?= form_open_multipart('', ['classe' => 'form-horizontal']); ?>
                     <div class="row">
                         <div class="col-md-8">
 
@@ -108,7 +108,7 @@
                         <div class="col-md-8">
                             <div class="row">
                                 <div class="col-md-offset-3 col-md-6">
-                                    <button type="submit" class="btn btn-primary">Save</button>
+                                    <?= form_submit('submit', 'Save', ['class' => 'btn btn-primary']); ?>
                                     <a href="#" class="btn btn-default">Cancel</a>
                                     <!-- Button vard_dump modal -->
                                     <?= form_button('var_dump', 'var_dump', ['class' => 'btn btn-warning', 'data-toggle' => 'modal', 'data-target' => '#myModal']); ?>
@@ -118,7 +118,6 @@
                     </div>
                 </div>
                 <?= form_close(); ?>
-
             </div>
         </div>
     </div>

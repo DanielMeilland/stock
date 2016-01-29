@@ -60,7 +60,7 @@ $config = [
         ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[groups.name]'],
     ],
 
-    'item/add' => [
+    'items/create' => [
         ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
     ],
 

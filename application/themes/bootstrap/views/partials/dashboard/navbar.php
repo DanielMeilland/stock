@@ -14,7 +14,7 @@
             <ul class="nav navbar-nav">
                 <li class=""><a href="<?= site_url('home'); ?>">Home</a></li>
                 <li class=""><a href="<?= site_url('dashboard'); ?>">Dashboard</a></li>
-                <li class=""><a href="<?= site_url('item'); ?>">Item</a></li>
+                <li class=""><a href="<?= site_url('items'); ?>">Item</a></li>
                 <li class=""><a href="<?= site_url('users'); ?>">users</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">

@@ -29,7 +29,7 @@
 
         </div>
         <div class="col-sm-3">
-            <a href="<?= site_url('item/add'); ?>" class="btn btn-primary pull-right h2">Ajouter un item</a>
+            <a href="<?= site_url('items/create'); ?>" class="btn btn-primary pull-right h2">Ajouter un item</a>
         </div>
     </div> <!-- /#top -->
 
@@ -41,9 +41,10 @@
             <table class="table table-striped" cellspacing="0" cellpadding="0">
                 <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nom</th>
                     <th>Description</th>
+                    <th>Fournisseur</th>
+                    <th>Lieu</th>
                     <th>Date</th>
                     <th class="actions">Actions</th>
                 </tr>
@@ -51,15 +52,16 @@
                 <tbody>
                 <?php foreach ($items as $item): ?>
                     <tr>
-                        <td><?= $item->item_id; ?></td>
                         <td><?= $item->name; ?></td>
                         <td><?= $item->description; ?></td>
+                        <td><?= $item->supplier->name ? $item->supplier->name : ''; ?></td>
+                        <td><?= $item->stocking_place->name ? $item->stocking_place->name : ''; ?></td>
                         <td><?= $item->created_date; ?></td>
                         <td class="actions">
                             <div class="btn-group" role="group" aria-label="...">
                                 <?= anchor(site_url('items/show/' . $item->item_id), 'Voir', ['class' => 'btn btn-default btn-xs']); ?>
                                 <?= anchor(site_url('items/edit/' . $item->item_id), 'Editer', ['class' => 'btn btn-primary btn-xs']); ?>
-                                <?= anchor(null, 'Supprimer', ['class' => 'btn btn-danger btn-xs', 'data-toggle' => 'modal', 'data-target' => '#delete-modal']); ?>
+                                <?= anchor(site_url('items/destroy/' . $item->item_id), 'Supprimer', ['class' => 'btn btn-danger btn-xs']); ?>
                             </div>
                         </td>
                     </tr>
@@ -69,6 +71,10 @@
         </div>
 
     </div><!-- /#list -->
+
+    <div id="body">
+        <p><?php echo $links; ?></p>
+    </div>
 
 </div><!-- Main -->
 
