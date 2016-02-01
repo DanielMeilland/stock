@@ -6,8 +6,7 @@
  * Time: 08:41
  */
 
-
-$config['use_page_numbers'] = TRUE;
+$config['use_page_numbers'] = false; // ne pas modifier !!!
 
 // twitter bootstrap markup
 $config['full_tag_open'] = '<ul class="pagination pagination-sm">';

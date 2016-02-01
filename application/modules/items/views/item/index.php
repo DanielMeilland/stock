@@ -52,11 +52,11 @@
                 <tbody>
                 <?php foreach ($items as $item): ?>
                     <tr>
-                        <td><?= $item->name; ?></td>
-                        <td><?= $item->description; ?></td>
-                        <td><?= $item->supplier->name ? $item->supplier->name : ''; ?></td>
-                        <td><?= $item->stocking_place->name ? $item->stocking_place->name : ''; ?></td>
-                        <td><?= $item->created_date; ?></td>
+                        <td><?= isset($item->name) ? $item->name : 'undefined'; ?></td>
+                        <td><?= isset($item->description) ? substr($item->description, 0, 150) : 'undefined'; ?></td>
+                        <td><?= isset($item->supplier->name) ? $item->supplier->name : 'undefined'; ?></td>
+                        <td><?= isset($item->stocking_place->name) ? $item->stocking_place->name : 'undefined'; ?></td>
+                        <td><?= isset($item->created_date) ? nice_date($item->created_date, 'd m Y') : 'undefined'; ?></td>
                         <td class="actions">
                             <div class="btn-group" role="group" aria-label="...">
                                 <?= anchor(site_url('items/show/' . $item->item_id), 'Voir', ['class' => 'btn btn-default btn-xs']); ?>
@@ -73,28 +73,9 @@
     </div><!-- /#list -->
 
     <div id="body">
-        <p><?php echo $links; ?></p>
+        <p><?= $links; ?></p>
     </div>
 
 </div><!-- Main -->
 
 <!-- Modal -->
-<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"
-     style="display: none;">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span
-                        aria-hidden="true">×</span></button>
-                <h4 class="modal-title" id="modalLabel">Supprimer l'item ?</h4>
-            </div>
-            <div class="modal-body"><?php var_dump($item); ?></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary"
-                        onClick="location.href='<?= site_url('item/delete/' . $item->item_id); ?>'">Oui
-                </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
-            </div>
-        </div>
-    </div>
-</div>

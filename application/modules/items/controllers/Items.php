@@ -37,13 +37,13 @@ class Items extends CI_Controller
      */
     public function index()
     {
-        $config = [];
-        $config["base_url"] = base_url() . "items/index";
+        $config["base_url"] = base_url('items/index');
         $config["total_rows"] = $this->item->record_count();
-        $config["per_page"] = 5;
+        $config["per_page"] = 4;
         $config["uri_segment"] = 3;
         $choice = $config["total_rows"] / $config["per_page"];
         $config["num_links"] = round($choice);
+
         $this->pagination->initialize($config);
 
         $page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
@@ -53,10 +53,11 @@ class Items extends CI_Controller
             ->with('stocking_place')
             ->limit($config["per_page"], $page)
             ->get_all();
+
         $this->data['stocking_places'] = $this->stocking_place->stocking_place_list();
         $this->data['suppliers'] = $this->supplier->suppliers_list();
         $this->data["links"] = $this->pagination->create_links();
-        $this->template->set($this->data)->build('index');
+        $this->template->set($this->data)->build('item/index');
     }
 
     /**
@@ -67,7 +68,9 @@ class Items extends CI_Controller
     public function create()
     {
         if ($this->form_validation->run() == false) {
-            $this->template->build('create');
+            $this->data['stocking_places'] = $this->stocking_place->stocking_place_list();
+            $this->data['suppliers'] = $this->supplier->suppliers_list();
+            $this->template->set($this->data)->build('item/create');
         } else {
             $this->store();
         }
@@ -117,7 +120,7 @@ class Items extends CI_Controller
             ->with('supplier')
             ->with('stocking_place')
             ->get($id);
-        $this->template->set($this->data)->build('show');
+        $this->template->set($this->data)->build('item/show');
     }
 
     /**
@@ -136,7 +139,7 @@ class Items extends CI_Controller
         $this->data['stocking_places'] = $this->stocking_place->stocking_place_list();
         $this->data['suppliers'] = $this->supplier->suppliers_list();
         if ($this->form_validation->run() == false) {
-            $this->template->set($this->data)->build('edit');
+            $this->template->set($this->data)->build('item/edit');
         } else {
             $this->update($id);
         }

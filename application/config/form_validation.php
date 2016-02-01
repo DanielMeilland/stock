@@ -52,6 +52,8 @@ $config = [
         ['field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email']
     ],
 
+
+
     'groups/add' => [
         ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[groups.name]'],
     ],
@@ -66,6 +68,18 @@ $config = [
 
     'items/edit' => [
         ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
+    ],
+
+
+    'suppliers/create' => [
+        ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required'],
+        ['field' => 'address_line1', 'label' => 'address_line1', 'rules' => 'trim'],
+        ['field' => 'address_line2', 'label' => 'address_line2', 'rules' => 'trim'],
+        ['field' => 'zip', 'label' => 'zip', 'rules' => 'trim'],
+        ['field' => 'city', 'label' => 'city', 'rules' => 'trim'],
+        ['field' => 'country', 'label' => 'country', 'rules' => 'trim'],
+        ['field' => 'tel', 'label' => 'tel', 'rules' => 'trim'],
+        ['field' => 'email', 'label' => 'email', 'rules' => 'trim|valid_email'],
     ],
 
     'email' => [

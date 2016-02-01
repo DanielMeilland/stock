@@ -14,8 +14,18 @@
             <ul class="nav navbar-nav">
                 <li class=""><a href="<?= site_url('home'); ?>">Home</a></li>
                 <li class=""><a href="<?= site_url('dashboard'); ?>">Dashboard</a></li>
-                <li class=""><a href="<?= site_url('items'); ?>">Item</a></li>
-                <li class=""><a href="<?= site_url('users'); ?>">users</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">CRUD<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li class=""><a href="<?= site_url('items'); ?>">Item</a></li>
+                        <li class=""><a href="<?= site_url('items/suppliers'); ?>">Fournisseurs</a></li>
+                        <li class=""><a href="<?= site_url('items/departements'); ?>">Département</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class=""><a href="<?= site_url('users'); ?>">Utilisateurs</a></li>
+                        <li class=""><a href="<?= site_url('users/groups'); ?>">Groups</a></li>
+                    </ul>
+                </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <?php if (isset($online) == true): ?>

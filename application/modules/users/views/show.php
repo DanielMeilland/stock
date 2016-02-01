@@ -1,7 +1,3 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: jeffreymostroso
- * Date: 28.01.16
- * Time: 23:41
- */
+<div class="container">
+    <?php var_dump($user); ?>
+</div>
