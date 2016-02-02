@@ -17,8 +17,8 @@
 
 $config = [
 
-    'authentification/register' => [
-        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|alpha_numeric|min_length[3]|max_length[64]|is_unique[users.username],
+    'auth/register' => [
+        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|alpha_numeric|min_length[3]|max_length[64]|is_unique[user.username],
         [\'is_unique\' => \'This username already exists. Please choose another one.\']'],
         ['field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email'],
         ['field' => 'firstname', 'label' => 'First name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
@@ -27,59 +27,42 @@ $config = [
         ['field' => 'password_confirm', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]']
     ],
 
-    'authentification/login' => [
+    'auth/login' => [
         ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
         ['field' => 'password', 'label' => 'Password', 'rules' => 'trim|required|min_length[8]'],
     ],
 
-    'authentification/forgot_password' => [
+    'auth/forgot_password' => [
         ['field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email']
     ],
 
-    'users/add' => [
-        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[users.username]'],
-        ['field' => 'firstname', 'label' => 'First name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
-        ['field' => 'lastname', 'label' => 'Last name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
-        ['field' => 'confirm_password', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]'],
+    'users/create' => [
+        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[user.username]'],
+        ['field' => 'first_name', 'label' => 'First name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
+        ['field' => 'last_name', 'label' => 'Last name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
+//        ['field' => 'confirm_password', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]'],
+//        ['field' => 'password', 'label' => 'Password', 'rules' => 'trim|required|min_length[8]'],
+//        ['field' => 'password_confirm', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]'],
         ['field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email']
     ],
 
     'users/edit' => [
-        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[users.username]'],
-        ['field' => 'firstname', 'label' => 'First name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
-        ['field' => 'lastname', 'label' => 'Last name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
-        ['field' => 'confirm_password', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]'],
+        ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[user.username]'],
+        ['field' => 'first_name', 'label' => 'First name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
+        ['field' => 'last_name', 'label' => 'Last name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
+//        ['field' => 'confirm_password', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]'],
+//        ['field' => 'password', 'label' => 'Password', 'rules' => 'trim|required|min_length[8]'],
+//        ['field' => 'password_confirm', 'label' => 'Confirm Password', 'rules' => 'trim|required|matches[password]'],
         ['field' => 'email', 'label' => 'Email', 'rules' => 'trim|required|valid_email']
     ],
 
 
-
-    'groups/add' => [
+    'groups/create' => [
         ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[groups.name]'],
     ],
 
     'groups/edit' => [
         ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[groups.name]'],
-    ],
-
-    'items/create' => [
-        ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
-    ],
-
-    'items/edit' => [
-        ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
-    ],
-
-
-    'suppliers/create' => [
-        ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required'],
-        ['field' => 'address_line1', 'label' => 'address_line1', 'rules' => 'trim'],
-        ['field' => 'address_line2', 'label' => 'address_line2', 'rules' => 'trim'],
-        ['field' => 'zip', 'label' => 'zip', 'rules' => 'trim'],
-        ['field' => 'city', 'label' => 'city', 'rules' => 'trim'],
-        ['field' => 'country', 'label' => 'country', 'rules' => 'trim'],
-        ['field' => 'tel', 'label' => 'tel', 'rules' => 'trim'],
-        ['field' => 'email', 'label' => 'email', 'rules' => 'trim|valid_email'],
     ],
 
     'email' => [

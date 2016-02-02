@@ -9,7 +9,6 @@
     <title><?= htmlspecialchars($template['title']); ?></title>
     <?= htmlspecialchars($template['metadata']); ?>
     <link href="<?= base_url('assets/bootstrap/dist/css/bootstrap.min.css'); ?>" rel="stylesheet">
-    <link href="<?= base_url('assets/jasny-bootstrap/css/jasny-bootstrap.min.css') ?>" rel="stylesheet">
-    <link href="<?= base_url('assets/app/css/custom.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/app/css/default.css') ?>" rel="stylesheet">
 </head>
 <body>
