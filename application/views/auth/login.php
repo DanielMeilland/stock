@@ -7,7 +7,7 @@
             <?= form_label('login_identity_label', 'identity'); ?>
             <div class="input-group">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                <?= form_input('identity', '', ['class' => 'form-control']); ?>
+                <?= form_input('identity', set_value('identity'), ['class' => 'form-control']); ?>
             </div>
             <?= $error; ?>
         </div>
@@ -17,7 +17,7 @@
             <?= form_label('login_password_label', 'password'); ?>
             <div class="input-group">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                <?= form_password('password', '', ['class' => 'form-control']); ?>
+                <?= form_password('password', set_value('password'), ['class' => 'form-control']); ?>
             </div>
             <?= $error; ?>
         </div>
