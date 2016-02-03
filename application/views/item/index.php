@@ -16,6 +16,7 @@
             <th>Description</th>
             <th>Fournisseur</th>
             <th>Lieu</th>
+            <th>State</th>
             <th>Date</th>
             <th class="actions">Actions</th>
         </tr>
@@ -27,6 +28,7 @@
                 <td><?= isset($item->description) ? substr($item->description, 0, 150) : 'undefined'; ?></td>
                 <td><?= isset($item->supplier->name) ? $item->supplier->name : 'undefined'; ?></td>
                 <td><?= isset($item->stocking_place->name) ? $item->stocking_place->name : 'undefined'; ?></td>
+                <td><?= isset($item->item_state->name) ? $item->item_state->name : 'undefined'; ?></td>
                 <td><?= isset($item->created_date) ? nice_date($item->created_date, 'd m Y') : 'undefined'; ?></td>
                 <td class="actions">
                     <div class="btn-group" role="group" aria-label="...">
@@ -41,9 +43,7 @@
     </table>
 
     <div id="body">
-        <p><?= $links; ?></p>
+        <p><?= isset($links) ? $links : ''; ?></p>
     </div>
 
 </div><!-- Main -->
-
-<!-- Modal -->

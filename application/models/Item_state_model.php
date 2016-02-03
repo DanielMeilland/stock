@@ -10,8 +10,6 @@ class Item_state_model extends MY_Model
 {
     public $_table = 'item_state';
     public $primary_key = 'item_state_id';
-    public $belongs_to = ['supplier', 'stocking_place'];
-    public $validate = [];
 
     public function __construct()
     {

@@ -26,8 +26,7 @@ class Users extends CI_Controller
         $this->template
             ->set_partial('header', 'partials/default/header')
             ->set_partial('navbar', 'partials/default/navbar')
-            ->set_partial('footer', 'partials/default/footer')
-            ->set_layout('default');
+            ->set_partial('footer', 'partials/default/footer');
     }
 
     /**
@@ -38,11 +37,7 @@ class Users extends CI_Controller
     public function index()
     {
         $this->data["pageName"] = 'Users';
-        $this->data['users'] = $this->user
-            ->with('user_type')
-            ->with('department')
-            ->with('user_state')
-            ->get_all();
+        $this->data['users'] = $this->user->with('user_type')->with('department')->with('user_state')->get_all();
         $this->template->set($this->data)->build('user/index');
     }
 
@@ -53,7 +48,8 @@ class Users extends CI_Controller
      */
     public function create()
     {
-        $this->form_validation->set_rules($this->user->validate);
+        $this->data["pageName"] = 'Ajouter un utilisateur';
+        $this->form_validation->set_rules($this->user->validate['users/create']);
         if ($this->form_validation->run() == false) {
             $this->data['user_types'] = $this->user_type->user_type_list();
             $this->data['departments'] = $this->department->department_list();
@@ -73,13 +69,17 @@ class Users extends CI_Controller
     {
         $this->data = [
             'username' => $this->input->post('username'),
+            'initials' => $this->input->post('initials'),
             'first_name' => $this->input->post('first_name'),
             'last_name' => $this->input->post('last_name'),
             'password' => $this->input->post('password'),
             'email' => $this->input->post('email'),
-            'created_on' => $this->input->post('created_on') ? $this->input->post('created_on') : date(),
-            'company' => $this->input->post('company'),
             'phone' => $this->input->post('phone'),
+            'user_type_id' => $this->input->post('user_type_id'),
+            'department_id' => $this->input->post('department_id'),
+            'user_state_id' => $this->input->post('user_state_id'),
+            'company' => $this->input->post('company'),
+            'created_on' => $this->input->post('created_on') ? $this->input->post('created_on') : '',
         ];
         $this->user->insert($this->data);
         redirect('users', 'refresh');
@@ -93,11 +93,7 @@ class Users extends CI_Controller
      */
     public function show($id)
     {
-        $this->data['user'] = $this->user
-            ->with('user_type')
-            ->with('department')
-            ->with('user_state')
-            ->get($id);
+        $this->data['user'] = $this->user->with('user_type')->with('department')->with('user_state')->get($id);
         $this->template->set($this->data)->build('user/show');
     }
 
@@ -109,13 +105,9 @@ class Users extends CI_Controller
      */
     public function edit($id)
     {
-        $this->form_validation->set_rules($this->user->validate);
+        $this->form_validation->set_rules($this->user->validate['users/edit']);
         if ($this->form_validation->run() == false) {
-            $this->data['user'] = $this->user
-                ->with('user_type')
-                ->with('department')
-                ->with('user_state')
-                ->get($id);
+            $this->data['user'] = $this->user->with('user_type')->with('department')->with('user_state')->get($id);
             $this->data['user_types'] = $this->user_type->user_type_list();
             $this->data['departments'] = $this->department->department_list();
             $this->data['user_states'] = $this->user_state->user_state_list();
@@ -135,13 +127,17 @@ class Users extends CI_Controller
     {
         $this->data = [
             'username' => $this->input->post('username'),
+            'initials' => $this->input->post('initials'),
             'first_name' => $this->input->post('first_name'),
             'last_name' => $this->input->post('last_name'),
             'password' => $this->input->post('password'),
             'email' => $this->input->post('email'),
-            'created_on' => $this->input->post('created_on') ? $this->input->post('created_on') : date(),
-            'company' => $this->input->post('company'),
             'phone' => $this->input->post('phone'),
+            'user_type_id' => $this->input->post('user_type_id'),
+            'department_id' => $this->input->post('department_id'),
+            'user_state_id' => $this->input->post('user_state_id'),
+            'company' => $this->input->post('company'),
+            'created_on' => $this->input->post('created_on') ? $this->input->post('created_on') : '',
         ];
         $this->user->update($id, $this->data);
         redirect('users', 'refresh');

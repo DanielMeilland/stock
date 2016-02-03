@@ -2,7 +2,7 @@
 
     <div class="row">
         <div class="col-sm-3">
-            <h2><?= htmlspecialchars($pageName); ?></h2>
+            <h2><?= isset($pageName) ? htmlspecialchars($pageName) : 'undefined'; ?></h2>
         </div>
         <div class="col-sm-offset-6 col-sm-3">
             <a href="<?= site_url('users/create'); ?>" class="btn btn-primary pull-right h2">Ajouter un utilisateur</a>
@@ -36,7 +36,7 @@
                     <div class="btn-group" role="group" aria-label="...">
                         <?= anchor(site_url('users/show/' . $user->user_id), 'Voir', ['class' => 'btn btn-default btn-xs']); ?>
                         <?= anchor(site_url('users/edit/' . $user->user_id), 'Editer', ['class' => 'btn btn-primary btn-xs']); ?>
-                        <?= anchor(site_url('users/destroy/' . $user->user_id), 'Supprimer', ['class' => 'btn btn-danger btn-xs']); ?>
+                        <?= anchor('#confirm-delete', 'Supprimer', ['class' => 'btn btn-danger btn-xs', 'data-href' => "users/destroy/$user->user_id", 'data-toggle' => "modal", 'data-target' => "#confirm-delete"]); ?>
                     </div>
                 </td>
             </tr>
@@ -47,3 +47,24 @@
 
     </div>
 </div>
+
+<?= var_dump($users); ?>
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                test
+            </div>
+            <div class="modal-body">
+                test
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger btn-ok">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+

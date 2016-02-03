@@ -10,7 +10,7 @@ class Stocking_place_model extends MY_Model
 {
     public $_table = 'stocking_place';
     public $primary_key = 'stocking_place_id';
-    public $belongs_to = ['item'];
+    public $belongs_to = 'item';
     public $validate = [];
 
     public function __construct()

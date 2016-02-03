@@ -13,7 +13,12 @@ class Item_model extends MY_Model
     public $belongs_to = ['supplier', 'stocking_place', 'item_state'];
 
     public $validate = [
-        ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]']
+        'items/create' => [
+            ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]|is_unique[item.name]'],
+        ],
+        'items/edit' => [
+            ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
+        ],
     ];
 
     public function __construct()

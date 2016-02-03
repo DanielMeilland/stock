@@ -8,7 +8,7 @@
                     <h3 class="page-header">Ajouter un Item</h3>
                 </div>
                 <div class="panel-body">
-                    <?= form_open_multipart('items/create', ['classe' => 'form-horizontal']); ?>
+                    <?= form_open('items/create'); ?>
                     <div class="row">
                         <div class="col-md-8">
 
@@ -20,7 +20,7 @@
                             </div>
 
                             <div class="form-group">
-                                <?= form_label('Lieu :', 'stocking_place_id', ['class' => 'control-label col-md-3']); ?>
+                                <?= form_label('Lieu de stockage :', 'stocking_place_id', ['class' => 'control-label col-md-3']); ?>
                                 <div class="col-md-8">
                                     <?= form_dropdown('stocking_place_id', $stocking_places, '', ['class' => 'form-control']); ?>
                                 </div>

@@ -8,6 +8,7 @@
  */
 class Groups extends CI_Controller
 {
+    public $data = [];
 
     public function __construct()
     {
@@ -16,8 +17,7 @@ class Groups extends CI_Controller
         $this->template
             ->set_partial('header', 'partials/default/header')
             ->set_partial('navbar', 'partials/default/navbar')
-            ->set_partial('footer', 'partials/default/footer')
-            ->set_layout('default');
+            ->set_partial('footer', 'partials/default/footer');
     }
 
     /**
@@ -39,7 +39,13 @@ class Groups extends CI_Controller
      */
     public function create()
     {
-        $this->template->build('group/create');
+        $this->data["pageName"] = 'Ajouter un group';
+        $this->form_validation->set_rules($this->group->validate['groups/create']);
+        if ($this->form_validation->run() == false) {
+            $this->template->set($this->data)->build('group/create');
+        } else {
+            $this->store();
+        }
     }
 
     /**
@@ -49,25 +55,9 @@ class Groups extends CI_Controller
      */
     public function store()
     {
-        $this->data = [
-            'ip_address' => $this->input->post(),
-            'username' => $this->input->post(),
-            'password' => $this->input->post(),
-            'salt' => $this->input->post(),
-            'email' => $this->input->post(),
-            'activation_code' => $this->input->post(),
-            'forgotten_password_code' => $this->input->post(),
-            'forgotten_password_time' => $this->input->post(),
-            'remember_code' => $this->input->post(),
-            'created_on' => $this->input->post(),
-            'last_login' => $this->input->post(),
-            'active' => $this->input->post(),
-            'first_name' => $this->input->post(),
-            'last_name' => $this->input->post(),
-            'company' => $this->input->post(),
-            'phone' => $this->input->post(),
-        ];
-        $this->post->insert($this->data);
+        $this->data = ['name' => $this->input->post('name'), 'description' => $this->input->post('description')];
+        $this->group->insert($this->data);
+        redirect('groups', 'refresh');
     }
 
     /**
@@ -90,8 +80,14 @@ class Groups extends CI_Controller
      */
     public function edit($id)
     {
-        $this->data['group'] = $this->group->get($id);
-        $this->template->set($this->data)->build('group/edit');
+        $this->form_validation->set_rules($this->group->validate['groups/edit']);
+        if ($this->form_validation->run() == false) {
+            $this->data['group'] = $this->group->get($id);
+            $this->template->set($this->data)->build('group/edit');
+        } else {
+            $this->update($id);
+        }
+
     }
 
     /**
@@ -102,7 +98,9 @@ class Groups extends CI_Controller
      */
     public function update($id)
     {
-        $this->group->update($id);
+        $this->data = ['name' => $this->input->post('name'), 'description' => $this->input->post('description')];
+        $this->group->update($id, $this->data);
+        redirect('groups', 'refresh');
     }
 
     /**
@@ -111,8 +109,10 @@ class Groups extends CI_Controller
      * @param  int $id
      * @return Response
      */
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         $this->group->delete($id);
+        redirect('groups', 'refresh');
     }
 }
