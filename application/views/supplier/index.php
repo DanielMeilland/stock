@@ -2,7 +2,7 @@
 
     <div class="page-header">
         <h4>Liste des fournisseurs</h4>
-        <?= anchor(site_url('items/suppliers/create'), 'Ajouter un fournisseur'); ?>
+        <?= anchor(site_url('suppliers/create'), 'Ajouter un fournisseur'); ?>
     </div>
 
     <table class="table table-striped table-bordered" cellspacing="0" cellpadding="0">
@@ -32,9 +32,9 @@
                 <td><?= isset($supplier->email) ? htmlspecialchars($supplier->email) : 'undefined'; ?></td>
                 <td class="actions">
                     <div class="btn-group" role="group" aria-label="...">
-                        <?= anchor(site_url('items/suppliers/show/' . $supplier->supplier_id), 'Voir', ['class' => 'btn btn-default btn-xs']); ?>
-                        <?= anchor(site_url('items/suppliers/edit/' . $supplier->supplier_id), 'Editer', ['class' => 'btn btn-primary btn-xs']); ?>
-                        <?= anchor(site_url('items/suppliers/destroy/' . $supplier->supplier_id), 'Supprimer', ['class' => 'btn btn-danger btn-xs']); ?>
+                        <?= anchor(site_url('suppliers/show/' . $supplier->supplier_id), 'Voir', ['class' => 'btn btn-default btn-xs']); ?>
+                        <?= anchor(site_url('suppliers/edit/' . $supplier->supplier_id), 'Editer', ['class' => 'btn btn-primary btn-xs']); ?>
+                        <?= anchor(site_url('suppliers/destroy/' . $supplier->supplier_id), 'Supprimer', ['class' => 'btn btn-danger btn-xs']); ?>
                     </div>
                 </td>
             </tr>
