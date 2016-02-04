@@ -1,10 +1,4 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: MoJe
- * Date: 21.12.2015
- * Time: 13:06
- */
+<? php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
  * Saving Sets of Validation Rules to a Config File
@@ -16,8 +10,6 @@
  */
 
 $config = [
-
-
     'email' => [
         ['field' => 'email', 'label' => 'Email', 'rules' => 'required|valid_email'],
         ['field' => 'name', 'label' => 'Name', 'rules' => 'required|alpha'],
