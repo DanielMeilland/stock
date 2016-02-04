@@ -3,9 +3,9 @@
 /**
  * Auth Class
  *
- * @package     Items
+ * @package     Simple and Lightweight Authentication System
  * @subpackage  CodeIgniter HMVC Module
- * @category    Modules
+ * @category    Authentication
  * @author      Jeffrey Mostroso
  * @link        https://github.com/jeffrey-omega
  */
@@ -64,17 +64,12 @@ class Auth extends CI_Controller
         // create the data object
         $data = new stdClass();
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-            // remove session datas
             foreach ($_SESSION as $key => $value) {
                 unset($_SESSION[$key]);
             }
-            // user logout ok
             $this->session->set_flashdata("message", "logout ok");
             redirect('auth/login', 'refresh');
-
         } else {
-            // there user was not logged in, we cannot logged him out,
-            // redirect him to site root
             redirect($this->agent->referrer(), 'refresh');
         }
     }
