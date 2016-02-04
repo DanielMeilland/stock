@@ -75,7 +75,7 @@ class Auth extends CI_Controller
         } else {
             // there user was not logged in, we cannot logged him out,
             // redirect him to site root
-            redirect('auth/login', 'refresh');
+            redirect($this->agent->referrer(), 'refresh');
         }
     }
 }

@@ -33,19 +33,30 @@
                 <td><?= isset($user->department->name) ? $user->department->name : 'undefined'; ?></td>
                 <td><?= isset($user->user_state->name) ? $user->user_state->name : 'undefined'; ?></td>
                 <td class="actions">
-                    <div class="btn-group" role="group" aria-label="...">
+                    <div class="" role="group" aria-label="...">
                         <?= anchor(site_url('users/show/' . $user->user_id), 'Voir', ['class' => 'btn btn-default btn-xs']); ?>
-                        <?= anchor(site_url('users/edit/' . $user->user_id), 'Editer', ['class' => 'btn btn-primary btn-xs']); ?>
-                        <?= anchor('#confirm-delete', 'Supprimer', ['class' => 'btn btn-danger btn-xs', 'data-href' => "users/destroy/$user->user_id", 'data-toggle' => "modal", 'data-target' => "#confirm-delete"]); ?>
+
+                        <a href="<?= site_url('users/edit/' . $user->user_id); ?>" class="btn btn-primary btn-xs">
+                            <i class="glyphicon glyphicon-edit"></i>
+                        </a>
+
+                        <button class="btn btn-danger btn-xs"
+                                data-href="<?= site_url('users/destroy/' . $user->user_id); ?>"
+                                data-toggle="modal" data-target="#confirm-delete">
+                            <li class="glyphicon glyphicon-trash"></li>
+                        </button>
+
                     </div>
                 </td>
             </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
-    <div class="pagination">
 
+    <div class="pagination">
+        <p><?= isset($links) ? $links : ''; ?></p>
     </div>
+
 </div>
 
 <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"

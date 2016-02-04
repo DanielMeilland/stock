@@ -25,8 +25,7 @@ class Items extends CI_Controller
         $this->template
             ->set_partial('header', 'partials/default/header')
             ->set_partial('navbar', 'partials/default/navbar')
-            ->set_partial('footer', 'partials/default/footer')
-            ->set_layout('default');
+            ->set_partial('footer', 'partials/default/footer');
 
         $this->load->library("pagination");
     }
@@ -183,7 +182,7 @@ class Items extends CI_Controller
     public function destroy($id)
     {
         $this->item->delete($id);
-        redirect('items', 'refresh');
+        redirect($this->agent->referrer(), 'refresh');
     }
 
 }

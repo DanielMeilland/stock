@@ -49,6 +49,7 @@ class Departments extends CI_Controller
     {
         $this->data['name'] = $this->input->post('name');
         $this->post->insert($this->data);
+        redirect($this->agent->referrer(), 'refresh');
     }
 
     /**
@@ -84,6 +85,7 @@ class Departments extends CI_Controller
     public function update($id)
     {
         $this->department->update($id);
+        redirect($this->agent->referrer(), 'refresh');
     }
 
     /**
@@ -95,6 +97,7 @@ class Departments extends CI_Controller
     public function destroy($id)
     {
         $this->department->delete($id);
+        redirect($this->agent->referrer(), 'refresh');
     }
 
 }

@@ -2,7 +2,7 @@
 
     <div class="row">
         <div class="col-sm-3">
-            <h2><?= htmlspecialchars($pageName); ?></h2>
+            <h2><?= isset($pageName) ? htmlspecialchars($pageName) : 'undefined'; ?></h2>
         </div>
         <div class="col-sm-offset-6 col-sm-3">
             <a href="<?= site_url('items/create'); ?>" class="btn btn-primary pull-right h2">Ajouter un item</a>
@@ -42,8 +42,8 @@
         </tbody>
     </table>
 
-    <div id="body">
+    <div class="pagination">
         <p><?= isset($links) ? $links : ''; ?></p>
     </div>
 
-</div><!-- Main -->
+</div>
