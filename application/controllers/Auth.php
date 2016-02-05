@@ -25,7 +25,7 @@ class Auth extends CI_Controller
     public function logged_in_check()
     {
         if ($this->session->userdata("logged_in")) {
-            redirect("items");
+            redirect("dashboard");
         }
     }
 
@@ -47,7 +47,7 @@ class Auth extends CI_Controller
             } else {
                 $this->session->set_userdata($this->auth->get_data());
                 $this->session->set_userdata("logged_in", true);
-                redirect("items");
+                redirect("dashboard");
             }
         }
         $this->template->build('auth/login');

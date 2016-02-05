@@ -16,7 +16,6 @@ class MY_Controller extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-
         $this->login_check();
     }
 
@@ -27,7 +26,6 @@ class MY_Controller extends CI_Controller
             if (!$this->permission_check()) {
                 die("<h4>Access denied</h4>");
             }
-
             // if user try to access logged in page
             // check does he/she has logged in
             // if not, redirect to login page
@@ -48,7 +46,6 @@ class MY_Controller extends CI_Controller
             if (in_array($this->session->userdata("role"), array_map("trim", $access))) {
                 return true;
             }
-
             return false;
         }
     }

@@ -12,14 +12,26 @@ class Supplier_model extends MY_Model
     public $primary_key = 'supplier_id';
     public $belongs_to = ['item', 'country'];
     public $validate = [
-        ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required'],
-        ['field' => 'address_line1', 'label' => 'address_line1', 'rules' => 'trim'],
-        ['field' => 'address_line2', 'label' => 'address_line2', 'rules' => 'trim'],
-        ['field' => 'zip', 'label' => 'zip', 'rules' => 'trim'],
-        ['field' => 'city', 'label' => 'city', 'rules' => 'trim'],
-        ['field' => 'country_id', 'label' => 'country_id', 'rules' => 'trim'],
-        ['field' => 'tel', 'label' => 'tel', 'rules' => 'trim'],
-        ['field' => 'email', 'label' => 'email', 'rules' => 'trim|valid_email']
+        'suppliers/create' => [
+            ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required'],
+            ['field' => 'address_line1', 'label' => 'address_line1', 'rules' => 'trim'],
+            ['field' => 'address_line2', 'label' => 'address_line2', 'rules' => 'trim'],
+            ['field' => 'zip', 'label' => 'zip', 'rules' => 'trim'],
+            ['field' => 'city', 'label' => 'city', 'rules' => 'trim'],
+            ['field' => 'country_id', 'label' => 'country_id', 'rules' => 'trim'],
+            ['field' => 'tel', 'label' => 'tel', 'rules' => 'trim'],
+            ['field' => 'email', 'label' => 'email', 'rules' => 'trim|valid_email']
+        ],
+        'suppliers/edit' => [
+            ['field' => 'name', 'label' => 'Name', 'rules' => 'trim|required'],
+            ['field' => 'address_line1', 'label' => 'address_line1', 'rules' => 'trim'],
+            ['field' => 'address_line2', 'label' => 'address_line2', 'rules' => 'trim'],
+            ['field' => 'zip', 'label' => 'zip', 'rules' => 'trim'],
+            ['field' => 'city', 'label' => 'city', 'rules' => 'trim'],
+            ['field' => 'country_id', 'label' => 'country_id', 'rules' => 'trim'],
+            ['field' => 'tel', 'label' => 'tel', 'rules' => 'trim'],
+            ['field' => 'email', 'label' => 'email', 'rules' => 'trim|valid_email']
+        ]
     ];
 
     public function __construct()

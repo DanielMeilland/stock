@@ -23,9 +23,10 @@ class Items extends CI_Controller
             ->model('stocking_place_model', 'stocking_place');
 
         $this->template
-            ->set_partial('header', 'partials/default/header')
-            ->set_partial('navbar', 'partials/default/navbar')
-            ->set_partial('footer', 'partials/default/footer');
+            ->set_theme('sbadmin2')
+            ->set_partial('header', 'partials/header')
+            ->set_partial('navigation', 'partials/navigation')
+            ->set_partial('footer', 'partials/footer');
 
         $this->load->library("pagination");
     }
@@ -66,6 +67,7 @@ class Items extends CI_Controller
      */
     public function create()
     {
+        $this->data["pageName"] = 'Ajouter un item';
         $this->form_validation->set_rules($this->item->validate['items/create']);
         if ($this->form_validation->run() == false) {
             $this->data['item_states'] = $this->item_state->item_state_list();
@@ -115,8 +117,9 @@ class Items extends CI_Controller
      * @param  int $id
      * @return Response
      */
-    public function show($id)
+    public function show($id = null)
     {
+        if (empty($id)) show_404();
         $this->data['item'] = $this->item->with('supplier')->with('stocking_place')->with('item_state')->get($id);
         $this->template->set($this->data)->build('item/show');
     }
@@ -127,8 +130,9 @@ class Items extends CI_Controller
      * @param  int $id
      * @return Response
      */
-    public function edit($id)
+    public function edit($id = null)
     {
+        if (empty($id)) show_404();
         $this->form_validation->set_rules($this->item->validate['items/edit']);
         if ($this->form_validation->run() == false) {
             $this->data['item'] = $this->item->with('supplier')->with('stocking_place')->with('item_state')->get($id);

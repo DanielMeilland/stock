@@ -24,9 +24,10 @@ class Users extends CI_Controller
             ->model('user_state_model', 'user_state');
 
         $this->template
-            ->set_partial('header', 'partials/default/header')
-            ->set_partial('navbar', 'partials/default/navbar')
-            ->set_partial('footer', 'partials/default/footer');
+            ->set_theme('sbadmin2')
+            ->set_partial('header', 'partials/header')
+            ->set_partial('navigation', 'partials/navigation')
+            ->set_partial('footer', 'partials/footer');
     }
 
     /**

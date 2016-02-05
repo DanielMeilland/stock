@@ -28,7 +28,8 @@ class Suppliers extends CI_Controller
             ->set_layout('default');
     }
 
-    public function test(){
+    public function test()
+    {
         $this->template->build('supplier/test');
     }
 
@@ -48,8 +49,9 @@ class Suppliers extends CI_Controller
      */
     public function create()
     {
+        $this->form_validation->set_rules($this->supplier->validate['suppliers/create']);
         if ($this->form_validation->run() == false) {
-            $this->data['countries'] = $this->country->country_list();
+            $this->data['country'] = $this->country->country_list();
             $this->template->set($this->data)->build('supplier/create');
         } else {
             $this->store();
@@ -97,9 +99,10 @@ class Suppliers extends CI_Controller
      */
     public function edit($id)
     {
-        $this->data['supplier'] = $this->supplier->with('country')->get($id);
-        $this->data['countries'] = $this->country->country_list();
+        $this->form_validation->set_rules($this->supplier->validate['suppliers/edit']);
         if ($this->form_validation->run() == false) {
+            $this->data['supplier'] = $this->supplier->with('country')->get($id);
+            $this->data['country'] = $this->country->country_list();
             $this->template->set($this->data)->build('supplier/edit');
         } else {
             $this->update($id);
@@ -125,7 +128,7 @@ class Suppliers extends CI_Controller
             'email' => $this->input->post('email')
         ];
         $this->supplier->update($id, $this->data);
-        redirect('items/suppliers', 'refresh');
+        redirect('suppliers', 'refresh');
     }
 
     /**
@@ -137,6 +140,6 @@ class Suppliers extends CI_Controller
     public function destroy($id)
     {
         $this->supplier->delete($id);
-        redirect('items/suppliers', 'refresh');
+        redirect($this->agent->referrer(), 'refresh');
     }
 }

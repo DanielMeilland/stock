@@ -1,6 +1,6 @@
 <section class="container">
     <section class="row">
-        <?= form_open(); ?>
+        <?= form_open('auth/login'); ?>
 
         <?php $error = form_error("identity", "<p class='text-danger'>", '</p>'); ?>
         <div class="form-group <?= $error ? 'has-error' : '' ?>">
