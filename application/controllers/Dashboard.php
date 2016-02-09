@@ -2,7 +2,7 @@
 
 class Dashboard extends MY_Controller
 {
-    protected $access = "Admin";
+    //protected $access = "Admin";
 
     public function __construct()
     {

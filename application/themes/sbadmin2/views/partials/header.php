@@ -16,7 +16,8 @@
     <link href="<?= base_url('assets/metisMenu/dist/metisMenu.min.css'); ?>" rel="stylesheet">
 
     <!-- DataTables CSS -->
-    <link href="<?= base_url('assets/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css'); ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css'); ?>"
+          rel="stylesheet">
 
     <!-- DataTables Responsive CSS -->
     <link href="<?= base_url('assets/datatables-responsive/css/dataTables.responsive.scss'); ?>" rel="stylesheet">
@@ -36,3 +37,6 @@
 </head>
 <body>
 <div id="wrapper">
+    <?php if ($this->session->flashdata('message')): ?>
+    <p class='alert alert-info'><?= $this->session->flashdata('message') ?></p>
+    <?php endif; ?>

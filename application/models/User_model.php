@@ -11,7 +11,7 @@ class User_model extends MY_Model
     public $_table = 'user';
     public $primary_key = 'user_id';
     public $belongs_to = ['user_type', 'department', 'user_state'];
-    public $protected_attributes = ['user_id'];
+    //public $protected_attributes = ['user_id'];
     public $validate = [
         'users/create' => [
             ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|alpha_numeric|min_length[3]|max_length[64]|is_unique[user.username]',],
@@ -45,28 +45,32 @@ class User_model extends MY_Model
     }
 
     /**
-     * hash_password function.
+     * get_user_id_from_username function.
      *
-     * @access private
-     * @param mixed $password
-     * @return string|bool could be a string on success, or bool false on failure
+     * @access public
+     * @param mixed $username
+     * @return int the user id
      */
-    private function hash_password($password)
+    public function get_user_id_from_username($username)
     {
-        return password_hash($password, PASSWORD_BCRYPT);
+        $this->db->select('user_id');
+        $this->db->from('user');
+        $this->db->where('username', $username);
+        return $this->db->get()->row('user_id');
     }
 
     /**
-     * verify_password_hash function.
+     * get_user function.
      *
-     * @access private
-     * @param mixed $password
-     * @param mixed $hash
-     * @return bool
+     * @access public
+     * @param mixed $user_id
+     * @return object the user object
      */
-    private function verify_password_hash($password, $hash)
+    public function get_user($user_id)
     {
-        return password_verify($password, $hash);
+        $this->db->from('user');
+        $this->db->where('user_id', $user_id);
+        return $this->db->get()->row();
     }
 
 }

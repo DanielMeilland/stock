@@ -1,31 +1,25 @@
 <section class="container">
     <section class="row">
-        <?= form_open('auth/login'); ?>
+        <?= form_open(); ?>
 
-        <?php $error = form_error("identity", "<p class='text-danger'>", '</p>'); ?>
+        <?php $error = form_error("username", "<p class='text-danger'>", '</p>'); ?>
         <div class="form-group <?= $error ? 'has-error' : '' ?>">
-            <?= form_label('login_identity_label', 'identity'); ?>
+            <label for="username">Username</label>
             <div class="input-group">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                <?= form_input('identity', set_value('identity'), ['class' => 'form-control']); ?>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Your username">
             </div>
             <?= $error; ?>
         </div>
 
         <?php $error = form_error("password", "<p class='text-danger'>", '</p>'); ?>
         <div class="form-group <?= $error ? 'has-error' : '' ?>">
-            <?= form_label('login_password_label', 'password'); ?>
+            <label for="password">Password</label>
             <div class="input-group">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                <?= form_password('password', set_value('password'), ['class' => 'form-control']); ?>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Your password">
             </div>
             <?= $error; ?>
-        </div>
-
-        <div class="form-group">
-            <?= form_label('login_remember_label', 'remember'); ?>
-            <?= form_checkbox('remember', '1', FALSE, 'id="remember"'); ?>
-            <a href="forgot_password" class="pull-right"><?php echo form_label('login_forgot_password'); ?></a>
         </div>
 
         <div class="well center-block" style="max-width:400px">
