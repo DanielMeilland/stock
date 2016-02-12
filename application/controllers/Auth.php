@@ -1,21 +1,24 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Auth Class
+ * Authentication System
  *
- * @package     Simple and Lightweight Authentication System
- * @subpackage  CodeIgniter HMVC Module
- * @category    Authentication
+ * @package     Authentication
  * @author      Jeffrey Mostroso
- * @link        https://github.com/jeffrey-omega
+ * @author      Didier Viret
+ * @link        https://github.com/OrifInformatique/stock
+ * @copyright   Copyright (c) 2016, Orif <http://www.orif.ch>
  */
-class Auth extends CI_Controller
+
+class Auth extends MY_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('auth_model', 'auth');
-        $this->load->model('user_model', 'user');
+
+        $this->load->model('user_model');
+        $this->load->model('user_type_model');
+
         $this->template
             ->set_partial('header', 'partials/auth/header')
             ->set_partial('footer', 'partials/auth/footer')
@@ -23,7 +26,7 @@ class Auth extends CI_Controller
     }
 
     /**
-     * login function.
+     * Login and create session variables
      *
      * @access public
      * @return void
@@ -31,21 +34,25 @@ class Auth extends CI_Controller
     public function login()
     {
         $data = new stdClass();
-        $this->form_validation->set_rules($this->auth->validate['auth/login']);
+
+        $this->form_validation->set_rules($this->user_model->get_validation_rules('auth/login'));
         if ($this->form_validation->run() == false) {
             $this->template->build('auth/login');
+        
         } else {
             $username = $this->input->post('username');
             $password = $this->input->post('password');
-            if ($this->auth->login($username, $password)) {
-                $user_id = $this->user->get_user_id_from_username($username);
-                $user = $this->user->get_user($user_id);
-                $_SESSION['user_id'] = (int)$user->id;
+
+            if ($this->user_model->login($username, $password)) {
+                $user = $this->user_model->get_by('username', $username);
+                $user_type = $this->user_type_model->get($user->user_type_id);
+
+                $_SESSION['user_id'] = (int)$user->user_id;
                 $_SESSION['username'] = (string)$user->username;
+                $_SESSION['user_access'] = (int)$user_type->access_level;
                 $_SESSION['logged_in'] = (bool)true;
-                $_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
-                $_SESSION['is_admin'] = (bool)$user->is_admin;
                 $this->session->set_flashdata('message', 'user login ok');
+
                 redirect('dashboard');
             } else {
                 $this->session->set_flashdata('message', 'login failed');
@@ -55,7 +62,7 @@ class Auth extends CI_Controller
     }
 
     /**
-     * logout function.
+     * Logout and erase session variables
      *
      * @access public
      * @return void
@@ -63,10 +70,12 @@ class Auth extends CI_Controller
     public function logout()
     {
         $data = new stdClass();
+
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             foreach ($_SESSION as $key => $value) {
                 unset($_SESSION[$key]);
             }
+
             redirect('auth/login', 'refresh');
         } else {
             redirect('/');

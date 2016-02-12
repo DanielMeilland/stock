@@ -1,18 +1,19 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
-
 /**
- * Created by PhpStorm.
- * User: jeffreymostroso
- * Date: 29.01.16
- * Time: 00:10
+ * @author      Jeffrey Mostroso
+ * @author      Didier Viret
+ * @link        https://github.com/OrifInformatique/stock
+ * @copyright   Copyright (c) 2016, Orif <http://www.orif.ch>
  */
+
 class User_model extends MY_Model
 {
-    public $_table = 'user';
-    public $primary_key = 'user_id';
-    public $belongs_to = ['user_type', 'department', 'user_state'];
-    //public $protected_attributes = ['user_id'];
-    public $validate = [
+    /* MY_Model variables definition */
+    protected $_table = 'user';
+    protected $primary_key = 'user_id';
+    protected $belongs_to = ['user_type', 'department', 'user_state'];
+    protected $protected_attributes = ['user_id'];
+    protected $validate = [
         'users/create' => [
             ['field' => 'username', 'label' => 'Username', 'rules' => 'trim|required|alpha_numeric|min_length[3]|max_length[64]|is_unique[user.username]',],
             ['field' => 'first_name', 'label' => 'First name', 'rules' => 'trim|min_length[3]|max_length[64]'],
@@ -31,10 +32,14 @@ class User_model extends MY_Model
             ['field' => 'password', 'label' => 'Password', 'rules' => 'trim|min_length[8]'],
             ['field' => 'password_confirm', 'label' => 'Confirm Password', 'rules' => 'trim|matches[password]'],
         ],
+        'auth/login' => [
+            ['field' => 'username', 'label' => 'username', 'rules' => 'trim|required|min_length[3]|max_length[64]'],
+            ['field' => 'password', 'label' => 'Password', 'rules' => 'trim|required|min_length[8]'],
+        ]
     ];
 
     /**
-     * __construct function.
+     * Constructor
      *
      * @access public
      * @return void
@@ -45,32 +50,29 @@ class User_model extends MY_Model
     }
 
     /**
-     * get_user_id_from_username function.
+     * Get validation rules for forms
      *
      * @access public
-     * @param mixed $username
-     * @return int the user id
+     * @param $rules_set : The set of rules to get, based on the controller
+     *                     method calling (see $this->validate array)
+     * @return validation rules array
      */
-    public function get_user_id_from_username($username)
+    public function get_validation_rules($rules_set)
     {
-        $this->db->select('user_id');
-        $this->db->from('user');
-        $this->db->where('username', $username);
-        return $this->db->get()->row('user_id');
+        return $this->validate[$rules_set];
     }
 
     /**
-     * get_user function.
+     * Check username and password for login
      *
      * @access public
-     * @param mixed $user_id
-     * @return object the user object
+     * @param $username
+     * @param $password
+     * @return bool true on success, false on failure
      */
-    public function get_user($user_id)
+    public function login($username, $password)
     {
-        $this->db->from('user');
-        $this->db->where('user_id', $user_id);
-        return $this->db->get()->row();
+        $user = $this->get_by('username', $username);
+        return password_verify($password, $user->password);
     }
-
 }

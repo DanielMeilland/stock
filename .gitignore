@@ -378,3 +378,4 @@ local.properties
 .texlipse
 
 # Created by .ignore support plugin (hsz.mobi)
+application/config/database.php
