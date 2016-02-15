@@ -23,7 +23,6 @@
                         <li class=""><a href="<?= site_url('items/departements'); ?>">Département</a></li>
                         <li role="separator" class="divider"></li>
                         <li class=""><a href="<?= site_url('users'); ?>">Utilisateurs</a></li>
-                        <li class=""><a href="<?= site_url('users/groups'); ?>">Groups</a></li>
                     </ul>
                 </li>
             </ul>

@@ -6,7 +6,7 @@
  * Date: 01.02.16
  * Time: 22:36
  */
-class Departments extends CI_Controller
+class Departments extends MY_Controller
 {
     public function __construct()
     {

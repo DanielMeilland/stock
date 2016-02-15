@@ -6,7 +6,7 @@
  * Date: 01.02.2016
  * Time: 14:45
  */
-class Suppliers extends CI_Controller
+class Suppliers extends MY_Controller
 {
     public $data = [];
 

@@ -9,7 +9,7 @@
  * @author      Jeffrey Mostroso
  * @link        https://github.com/jeffrey-omega
  */
-class Stocking_places extends CI_Controller
+class Stocking_places extends MY_Controller
 {
     public $data = [];
 

@@ -9,7 +9,7 @@
  * @author      Jeffrey Mostroso
  * @link        https://github.com/jeffrey-omega
  */
-class Users extends CI_Controller
+class Users extends MY_Controller
 {
     public $data = [];
 
@@ -18,7 +18,6 @@ class Users extends CI_Controller
         parent::__construct();
 
         $this->load->model('user_model', 'user')
-            //->model('group_model', 'group')
             ->model('user_type_model', 'user_type')
             ->model('department_model', 'department')
             ->model('user_state_model', 'user_state');

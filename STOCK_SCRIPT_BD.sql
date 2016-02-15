@@ -310,27 +310,6 @@ INSERT IGNORE INTO `department` (`department_id`, `name`) VALUES
 /*!40000 ALTER TABLE `department` ENABLE KEYS */;
 
 
--- Export de la structure de table stock. groups
-CREATE TABLE IF NOT EXISTS `groups` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL,
-  `description` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
-
--- Export de données de la table stock.groups : ~7 rows (environ)
-/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
-INSERT IGNORE INTO `groups` (`id`, `name`, `description`) VALUES
-    (1, 'admin 1', 'Administrator test'),
-    (2, 'members', 'General User'),
-    (3, 'asdff', ''),
-    (4, 'Démo', ''),
-    (5, 'asdfffgdg', 'dfasgfsdfg'),
-    (6, 'admin', ''),
-    (7, '64457437', '');
-/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
-
-
 -- Export de la structure de table stock. item
 CREATE TABLE IF NOT EXISTS `item` (
   `item_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -560,29 +539,6 @@ INSERT IGNORE INTO `user` (`user_id`, `username`, `password`, `first_name`, `las
     (14, 'OrifInfo2009', '$2y$11$.5oBQQJXdY7Ixv6ETT5DaOWa5Z88VnoifkHHUNGOLJMkcunm0gD8S', 'OrifInfo2009', 'OrifInfo2009', 'n3tsky@me.com', '', 0, NULL, '', NULL, 1, 3, 2),
     (15, 'admindfgdfgh', 'test@test.com', '', '', 'test@test.com', '', 0, NULL, '', NULL, 1, 1, 1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
-
-
--- Export de la structure de table stock. user_groups
-CREATE TABLE IF NOT EXISTS `user_groups` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) unsigned NOT NULL,
-  `group_id` mediumint(8) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uc_users_groups` (`user_id`,`group_id`),
-  KEY `fk_users_groups_users1_idx` (`user_id`),
-  KEY `fk_users_groups_groups1_idx` (`group_id`),
-  CONSTRAINT `fk_users_groups_groups1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_users_groups_users1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
-
--- Export de données de la table stock.user_groups : ~4 rows (environ)
-/*!40000 ALTER TABLE `user_groups` DISABLE KEYS */;
-INSERT IGNORE INTO `user_groups` (`id`, `user_id`, `group_id`) VALUES
-    (4, 1, 1),
-    (5, 1, 2),
-    (3, 2, 2),
-    (6, 3, 2);
-/*!40000 ALTER TABLE `user_groups` ENABLE KEYS */;
 
 
 -- Export de la structure de table stock. user_state

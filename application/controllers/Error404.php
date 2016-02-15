@@ -1,6 +1,6 @@
 <?php
 
-class Error404 extends CI_Controller
+class Error404 extends MY_Controller
 {
     public function __construct()
     {

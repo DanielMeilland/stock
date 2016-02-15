@@ -33,8 +33,6 @@ class Auth extends MY_Controller
      */
     public function login()
     {
-        $data = new stdClass();
-
         $this->form_validation->set_rules($this->user_model->get_validation_rules('auth/login'));
         if ($this->form_validation->run() == false) {
             $this->template->build('auth/login');
@@ -54,6 +52,7 @@ class Auth extends MY_Controller
                 $this->session->set_flashdata('message', 'user login ok');
 
                 redirect('dashboard');
+
             } else {
                 $this->session->set_flashdata('message', 'login failed');
                 $this->template->build('auth/login');
@@ -69,8 +68,6 @@ class Auth extends MY_Controller
      */
     public function logout()
     {
-        $data = new stdClass();
-
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             foreach ($_SESSION as $key => $value) {
                 unset($_SESSION[$key]);
