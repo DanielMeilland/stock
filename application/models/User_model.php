@@ -49,18 +49,6 @@ class User_model extends MY_Model
         parent::__construct();
     }
 
-    /**
-     * Get validation rules for forms
-     *
-     * @access public
-     * @param $rules_set : The set of rules to get, based on the controller
-     *                     method calling (see $this->validate array)
-     * @return validation rules array
-     */
-    public function get_validation_rules($rules_set)
-    {
-        return $this->validate[$rules_set];
-    }
 
     /**
      * Check username and password for login

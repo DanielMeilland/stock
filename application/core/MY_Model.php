@@ -824,4 +824,19 @@ class MY_Model extends CI_Model
         $method = ($multi) ? 'result' : 'row';
         return $this->_temporary_return_type == 'array' ? $method . '_array' : $method;
     }
+
+
+    /**
+     * Get validation rules for use in another class, typically in the controller
+     * to valid a form.
+     *
+     * @access public
+     * @param $rules_set : The set of rules to get, based on the controller
+     *                     method calling (see $this->validate array)
+     * @return validation rules array
+     */
+    public function get_validation_rules($rules_set)
+    {
+        return $this->validate[$rules_set];
+    }
 }
