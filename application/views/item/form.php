@@ -8,7 +8,7 @@
 
     <?php
         if(isset($error_message))
-        { 
+        {
             echo '<div style="color:red">';
             echo ($error_message);
             echo '</div>';
@@ -31,126 +31,126 @@
                         <td>
                             <table>
                                 <tr>
-                                    <td>Nom du produit : </td>								
+                                    <td>Nom du produit : </td>
                                     <td>
-                                        <input type="text" size="30" name="name" id="name" maxlength="45" value="<?php echo $item['name'];?>">
+                                        <input type="text" size="30" name="name" id="name" maxlength="45" value="<?php echo $item['name'];?>" />
                                     </td>
                                     <td></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td>Lieu : </td>									
+                                    <td>Lieu : </td>
                                     <td>
                                         <?php echo stock_drop_down('stocking_place', $item_link['stocking_place'], 'stocking_place_id', 'name', $item['stocking_place_id']); ?>
-                                    </td>								
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>Description : </td>								
+                                    <td>Description : </td>
                                     <td>
                                         <textarea name="description" id="description" rows="4" cols="35" maxlength="4096" class="form_content"><?php echo $item['description'];?></textarea>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Fournisseur : </td>									
+                                    <td>Fournisseur : </td>
                                     <td>
                                         <?php echo stock_drop_down('supplier', $item_link['supplier'], 'supplier_id', 'name', $item['supplier_id']); ?>
-                                    </td>								
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>Numéro de série : </td>								
+                                    <td>Numéro de série : </td>
                                     <td>
-                                        <input type="text" size="30" name="serial_number" id="serial_number" maxlength="45" value="<?php echo $item['serial_number'];?>">
+                                        <input type="text" size="30" name="serial_number" id="serial_number" maxlength="45" value="<?php echo $item['serial_number'];?>" />
                                     </td>
-                                </tr>	
+                                </tr>
                                 <tr>
-                                    <td></td>								
+                                    <td></td>
 
                                     <td></td>
-                                </tr>		
+                                </tr>
                                 <tr>
-                                    <td>Notes : </td>								
+                                    <td>Notes : </td>
                                     <td>
                                         <textarea rows="4" cols="35" name="remarks" id="remarks" maxlength="4096" class="form_content"><?php echo $item['remarks'];?></textarea>
                                     </td>
-                                </tr>	
+                                </tr>
                                 <tr>
-                                    <td>Prix : </td>								
+                                    <td>Prix : </td>
                                     <td>
-                                        <input type="text" size="30" name="buying_price" id="buying_price" maxlength="45" value="<?php echo $item['buying_price'];?>">
+                                        <input type="text" size="30" name="buying_price" id="buying_price" maxlength="45" value="<?php echo $item['buying_price'];?>" />
                                     </td>
-                                </tr>	
+                                </tr>
                                 <tr>
-                                    <td>Date d'achat : </td>								
+                                    <td>Date d'achat : </td>
                                     <td>
-                                        <input type="text" size="30" name="buying_date" id="buying_date" maxlength="45" value="<?php echo $item['buying_date'];?>">
+                                        <input type="text" size="30" name="buying_date" id="buying_date" maxlength="45" value="<?php echo $item['buying_date'];?>" />
                                         <script> $(function() {    $( "#buying_date" ).datepicker();}); </script>
                                     </td>
-                                </tr>								
+                                </tr>
                                 <tr>
-                                    <td>Garantie : </td>								
+                                    <td>Garantie : </td>
                                     <td>
-                                        <input type="text" size="30" name="warranty_duration" id="warranty_duration" maxlength="45" value="<?php echo $item['warranty_duration'];?>">
+                                        <input type="text" size="30" name="warranty_duration" id="warranty_duration" maxlength="45" value="<?php echo $item['warranty_duration'];?>" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Numéro fichier : </td>								
+                                    <td>Numéro fichier : </td>
                                     <td>
-                                        <input type="text" size="30" name="file_number" id="file_number" maxlength="45" value="<?php echo $item['file_number'];?>">
+                                        <input type="text" size="30" name="file_number" id="file_number" maxlength="45" value="<?php echo $item['file_number'];?>" />
                                     </td>
-                                </tr>						
-                                <tr>							
-                                    <td>Crée par : </td>								
+                                </tr>
+                                <tr>
+                                    <td>Crée par : </td>
 
                                     <td>
-                                       <?php echo stock_drop_down('created_by_user_id', $item_link['user'], 'user_id', 'initials', $item['created_by_user_id']); ?>													
+                                       <?php echo stock_drop_down('created_by_user_id', $item_link['user'], 'user_id', 'initials', $item['created_by_user_id']); ?>
                                     </td>
                                 </tr>
-                                <tr>	
-                                    <td>Date création : </td>								
+                                <tr>
+                                    <td>Date création : </td>
                                     <td>
-                                        <input type="text" size="30" name="created_date" id="created_date" maxlength="45" value="<?php echo $item['created_date'];?>">
+                                        <input type="text" size="30" name="created_date" id="created_date" maxlength="45" value="<?php echo $item['created_date'];?>" />
                                         <script> $(function() {    $( "#created_date" ).datepicker();}); </script>
                                     </td>
                                 </tr>
-                                <tr>								
-                                    <td>Modifié par : </td>								
+                                <tr>
+                                    <td>Modifié par : </td>
                                     <td>
                                         <?php echo stock_drop_down('modified_by_user_id', $item_link['user'], 'user_id', 'initials', $item['modified_by_user_id']); ?>
                                     </td>
-                                </tr>	
+                                </tr>
                                 <tr>
-                                    <td>Date modification : </td>								
+                                    <td>Date modification : </td>
                                     <td>
                                         <input type="text" size="30" name="modified_date" id="modified_date" maxlength="45" value="<?php echo $item['modified_date'];?>">
                                         <script> $(function() {    $( "#modified_date" ).datepicker();}); </script>
                                     </td>
                                 </tr>
-                                <tr>								
-                                    <td>Dernier contrôle par : </td>								
+                                <tr>
+                                    <td>Dernier contrôle par : </td>
                                     <td>
                                         <?php echo stock_drop_down('control_by_user_id', $item_link['user'], 'user_id', 'initials', $item['control_by_user_id']); ?>
                                     </td>
                                 </tr>
-                                <tr>	
-                                    <td>Date du contrôle : </td>								
+                                <tr>
+                                    <td>Date du contrôle : </td>
                                     <td>
                                         <input type="text" size="30" name="control_date" id="control_date" maxlength="45" value="<?php echo $item['control_date'];?>">
                                         <script> $(function() {    $( "#control_date" ).datepicker();}); </script>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td></td>								
+                                    <td></td>
 
                                     <td></td>
-                                </tr>	
+                                </tr>
                             </table>
                         </td>
                         <td>
 
                             <?php /* ********************************** ETAT *********************************************/ ?>
                             <div style="font-style:italic;">Etat : </div><br>
-                            
-                            <?php 
+
+                            <?php
                                 foreach ($item_link['item_state'] as $state)
                                 {
                                     echo '<input type="radio" name="item_state_id"';
@@ -166,13 +166,13 @@
                                     }
                                 }
                             ?>
-                            
+
                             <br><br>
 
                             <?php /* *********************************** IMAGE ******************************************/ ?>
                             <table class="grey_round_border" style="width:auto;">
 
-                                <?php 
+                                <?php
                                     if(isset($item['image']))
                                     {
                                         echo '<tr><td style="padding:10px" colspan="2">';
@@ -188,8 +188,8 @@
                                 <tr>
                                     <td style="padding:10px">
 
-                                    <?php 
-                                        if($access_level) 
+                                    <?php
+                                        if($access_level)
                                         {
                                             echo '<a href="'.
                                             base_url().'item/upload/'.$item['item_id'].
@@ -205,18 +205,18 @@
                                             '" download>Exporter image</a>';
 
                                             echo '</td>';
-                                        }		
+                                        }
                                     ?>
 
                                     </td>
                                 </tr>
                             </table>
-                            
+
                             <br><br>
 
                             <?php /* ********************************** TAGS *********************************************/ ?>
 
-                            <?php 
+                            <?php
                                 if(isset($item['tags']))
                                 {
                                     echo '<div style="font-style:italic;">Etiquettes :</div><br>';
@@ -227,7 +227,7 @@
                                         echo '- ';
                                         echo $item_link['item_tag'][$tag['item_tag_id']]['name'];
 
-                                        if($access_level) 
+                                        if($access_level)
                                         {
                                             echo ' <input type="button" value="x" onclick="window.location.href=\''.base_url().'item/remove_tag/'.$item['item_id'].'/'.$tag['item_tag_link_id'].'\'">';
                                         }
@@ -238,7 +238,7 @@
                                     }
                                 }
 
-                                if($access_level) 
+                                if($access_level)
                                 {
                                     echo '<br> Ajouter ';
 
